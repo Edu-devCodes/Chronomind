@@ -1,0 +1,54 @@
+# =========================
+# Frontend - React / Vite / Next
+# =========================
+Chronomind-front/node_modules/
+Chronomind-front/build/     
+Chronomind-front/.env
+Chronomind-front/readme.md
+Chronomind-front/.env.local
+Chronomind-front/.DS_Store
+Chronomind-front/Thumbs.db
+Chronomind-front/.cache/   
+Chronomind-front/logs/
+Chronomind-front/*.log
+# =========================
+# IDEs / editores
+# =========================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# =========================
+# Backend - Node.js
+# =========================
+
+Chronomind-back/node_modules/
+Chronomind-back/.env
+Chronomind-back/readme.md
+Chronomind-back/.env.local
+Chronomind-back/.DS_Store
+Chronomind-back/Thumbs.db
+Chronomind-back/tmp/
+Chronomind-back/logs/
+Chronomind-back/*.log
+
+# Pastas de build / dist
+Chronomind-back/dist/
+Chronomind-back/build/
+
+# Scripts 
+Chronomind-back/scripts/
+
+# FFMPEG build local
+Chronomind-back/ffmpeg-2026-01-14-git-6c878f8b82-essentials_build/
+
+# IDEs / editores
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

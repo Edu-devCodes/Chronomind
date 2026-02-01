@@ -1,0 +1,449 @@
+/* ===== SECTION ===== */
+
+.achievements-section {
+
+  margin-top: 70px;
+}
+
+
+.achievements-section h2 {
+
+  font-size: 30px;
+
+  font-weight: 700;
+
+  color: white;
+
+  margin-bottom: 26px;
+}
+
+
+
+/* ===== GRID ===== */
+
+.achievements-grid {
+
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+  gap: 26px;
+}
+
+
+
+/* ===== BASE ===== */
+
+.achv-card {
+
+  position: relative;
+
+  padding: 28px 22px;
+
+  border-radius: 18px;
+
+  background: #0c0c0c;
+
+  border: 1px solid rgba(255,255,255,.05);
+
+  text-align: center;
+
+  overflow: hidden;
+
+  transition: .3s;
+}
+
+
+
+/* ===== BACKGROUND ICON ===== */
+
+.achv-bg-icon {
+
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  font-size: 120px;
+
+  opacity: .05;
+
+  pointer-events: none;
+}
+
+
+
+/* ===== ICON ===== */
+
+.achv-icon {
+
+  position: relative;
+
+  z-index: 2;
+
+  font-size: 40px;
+
+  margin-bottom: 14px;
+
+  text-shadow: 0 0 16px currentColor;
+}
+
+
+
+/* ===== TEXT ===== */
+
+.achv-card h3 {
+
+  font-size: 17px;
+
+  color: white;
+
+  margin-bottom: 6px;
+
+  position: relative;
+
+  z-index: 2;
+}
+
+
+.achv-card p {
+
+  font-size: 13px;
+
+  color: #aaa;
+
+  position: relative;
+
+  z-index: 2;
+}
+
+
+
+/* ===== LOCKED ===== */
+
+.achv-locked {
+
+  backdrop-filter: blur(6px);
+
+  filter: grayscale(.8);
+
+  opacity: .7;
+}
+
+
+.achv-locked::after {
+
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background: rgba(0,0,0,.55);
+
+  z-index: 1;
+}
+
+
+
+/* ===== UNLOCKED ===== */
+
+.achv-unlocked {
+
+  box-shadow:
+    0 0 25px rgba(255,255,255,.08),
+    inset 0 0 20px rgba(255,255,255,.05);
+}
+
+
+
+/* ===== FEATURED (PRIMEIRO) ===== */
+
+.achv-featured {
+
+  border: 1px solid rgba(255,215,0,.5);
+
+  box-shadow:
+    0 0 35px rgba(255,215,0,.25),
+    inset 0 0 20px rgba(255,215,0,.15);
+}
+
+
+.achv-featured .achv-icon {
+
+  font-size: 46px;
+}
+
+
+
+/* ===== BADGE ===== */
+
+.achv-badge {
+
+  display: inline-block;
+
+  margin-top: 14px;
+
+  padding: 5px 14px;
+
+  border-radius: 20px;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  background: rgba(255,255,255,.12);
+
+  text-transform: uppercase;
+}
+
+
+
+/* ===== COLORS ===== */
+
+.achv-gold { color: #ffd700; }
+
+.achv-gold.achv-unlocked {
+  background: linear-gradient(145deg,#1a1400,#0c0c0c);
+}
+
+
+.achv-purple { color: #b36bff; }
+
+.achv-purple.achv-unlocked {
+  background: linear-gradient(145deg,#170020,#0c0c0c);
+}
+
+
+.achv-blue { color: #4da6ff; }
+
+.achv-blue.achv-unlocked {
+  background: linear-gradient(145deg,#00141f,#0c0c0c);
+}
+
+
+.achv-green { color: #3dff9e; }
+
+.achv-green.achv-unlocked {
+  background: linear-gradient(145deg,#001f12,#0c0c0c);
+}
+
+
+.achv-red { color: #ff4d4d; }
+
+.achv-red.achv-unlocked {
+  background: linear-gradient(145deg,#1f0000,#0c0c0c);
+}
+
+/* ===== INFO ICON ===== */
+
+.achv-info {
+
+  position: absolute;
+
+  top: 14px;
+  right: 14px;
+
+  font-size: 14px;
+
+  color: #aaa;
+
+  opacity: .6;
+
+  z-index: 5;
+}
+
+
+
+/* ===== PROGRESS ===== */
+
+.achv-progress {
+
+  margin-top: 14px;
+
+  position: relative;
+
+  z-index: 3;
+}
+
+
+.achv-progress-bar {
+
+  height: 6px;
+
+  background: #111;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  margin-bottom: 6px;
+}
+
+
+.achv-progress-fill {
+
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    currentColor,
+    rgba(255,255,255,.4)
+  );
+
+  transition: width .4s ease;
+}
+
+
+.achv-progress small {
+
+  font-size: 11px;
+
+  color: #888;
+}
+
+/* ===== TOOLTIP MELHORADO ===== */
+
+.achv-info {
+  cursor: help;
+  transition: .2s;
+}
+
+.achv-info:hover {
+  color: white;
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+
+/* ===== FEATURED PREMIUM ===== */
+
+.achv-featured {
+  position: relative;
+  background: linear-gradient(145deg,#1a1400,#0c0c0c);
+  border: 1px solid rgba(255,215,0,.6);
+
+  box-shadow:
+    0 0 45px rgba(255,215,0,.35),
+    inset 0 0 25px rgba(255,215,0,.2);
+}
+
+.achv-featured::before {
+  content: "🏆 DESTAQUE";
+  position: absolute;
+  top: 12px;
+  left: 12px;
+
+  font-size: 11px;
+  font-weight: bold;
+
+  color: gold;
+  letter-spacing: 1px;
+
+  opacity: .7;
+}
+
+
+/* ===== BACKGROUND ICON BOOST ===== */
+
+.achv-bg-icon {
+  font-size: 140px;
+  opacity: .06;
+}
+
+
+/* ===== LOCKED VISUAL ===== */
+
+.achv-locked {
+  filter: grayscale(1);
+  opacity: .75;
+}
+
+.achv-locked .achv-icon {
+  color: #666;
+  text-shadow: none;
+}
+
+
+/* ===== UNLOCKED ANIMATION ===== */
+
+.achv-unlocked:hover {
+  box-shadow:
+    0 0 35px currentColor,
+    inset 0 0 20px rgba(255,255,255,.1);
+}
+
+/* ===== HEADER ===== */
+
+.achv-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 20px;
+}
+
+
+
+/* ===== BOTÃO TOGGLE ===== */
+
+.achv-toggle {
+
+  background: transparent;
+
+  border: 1px solid rgba(255,255,255,.15);
+
+  color: #aaa;
+
+  padding: 6px 14px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  transition: .3s;
+}
+
+
+.achv-toggle:hover {
+
+  color: white;
+
+  border-color: rgba(255,255,255,.4);
+
+  box-shadow: 0 0 10px rgba(255,255,255,.15);
+}
+
+
+
+/* ===== 3 COLUNAS FIXAS ===== */
+
+.achievements-3cols {
+
+  grid-template-columns: repeat(3, 1fr);
+}
+
+
+
+/* RESPONSIVO */
+
+@media (max-width: 900px) {
+
+  .achievements-3cols {
+
+    grid-template-columns: 1fr;
+  }
+}

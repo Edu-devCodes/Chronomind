@@ -1,0 +1,991 @@
+/* ===============================
+   Layout Geral
+================================ */
+
+.mindmap-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background: #050505;
+  overflow: hidden;
+}
+
+
+/* ===============================
+   Página
+================================ */
+
+.mindmap-page {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 0;
+  min-width: 0;
+
+  color: white;
+  overflow: hidden;
+}
+
+
+/* ===============================
+   Header
+================================ */
+
+.mindmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 20px 28px;
+
+  border-bottom: 1px solid #1f1f1f;
+
+  background: linear-gradient(to right, #090909, #050505);
+}
+
+.mindmap-header h1 {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.mindmap-header p {
+  margin-top: 4px;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+
+/* ===============================
+   Botão Add
+================================ */
+
+.mindmap-add-btn {
+  background: #d40000;
+
+  border: none;
+  color: white;
+
+  padding: 8px 16px;
+  border-radius: 10px;
+
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.mindmap-add-btn:hover {
+  background: #ff1c1c;
+}
+
+
+/* ===============================
+   Wrapper
+================================ */
+
+.mindmap-wrapper {
+  flex: 1;
+
+  display: flex;
+
+  min-height: 0;
+  min-width: 0;
+
+  position: relative;
+  overflow: hidden;
+}
+
+
+/* ===============================
+   Canvas (React Flow)
+================================ */
+
+.mindmap-canvas {
+  flex: 1;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+
+  min-height: 0;
+  min-width: 0;
+
+  overflow: hidden;
+
+  background: radial-gradient(circle at center, #080808, #020202);
+}
+
+.mindmap-canvas .react-flow {
+  width: 100%;
+  height: 100%;
+}
+
+
+/* ===============================
+   React Flow UI
+================================ */
+
+.react-flow__background {
+  opacity: 0.25;
+}
+
+.react-flow__controls {
+  background: #111;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #222;
+}
+
+.react-flow__controls button {
+  background: #0a0a0a;
+  color: white;
+  border: none;
+}
+
+.react-flow__controls button:hover {
+  background: #1a1a1a;
+}
+
+.react-flow__minimap {
+  background: #080808;
+  border: 1px solid #222;
+  border-radius: 10px;
+}
+
+.react-flow__node {
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 13px;
+}
+
+
+/* ===============================
+   Legenda
+================================ */
+
+.mindmap-legend {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+
+  width: 180px;
+
+  background: linear-gradient(
+    160deg,
+    rgba(20,20,20,0.9),
+    rgba(5,5,5,0.95)
+  );
+
+  border-radius: 16px;
+
+  padding: 16px 18px;
+
+  border: 1px solid #222;
+
+  box-shadow:
+    0 0 25px rgba(255,0,0,0.08),
+    inset 0 0 10px rgba(255,255,255,0.03);
+
+  backdrop-filter: blur(10px);
+
+  z-index: 20;
+}
+
+.mindmap-legend h3 {
+  font-size: 14px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.mindmap-legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mindmap-legend li {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  font-size: 13px;
+  padding: 6px 0;
+}
+
+.mindmap-legend .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.mindmap-legend .goal {
+  color: #ff2d2d;
+}
+
+.mindmap-legend .habit {
+  color: #00ff9c;
+}
+
+.mindmap-legend .task {
+  color: orange;
+}
+
+.mindmap-legend .idea {
+  color: #aaa;
+}
+
+
+/* ===============================
+   Loading
+================================ */
+
+.mindmap-loading {
+  height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 22px;
+  font-weight: 500;
+
+  background: #050505;
+  color: white;
+}
+
+/* ===============================
+   Modal Avançado
+================================ */
+
+.mindmap-modal-advanced {
+  width: 360px;
+
+  background: linear-gradient(
+    160deg,
+    #0c0c0c,
+    #050505
+  );
+
+  border-radius: 18px;
+
+  padding: 26px 24px;
+
+  border: 1px solid #222;
+
+  color: white;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,.8),
+    0 0 25px rgba(255,0,0,0.15),
+    inset 0 0 10px rgba(255,255,255,0.03);
+
+  /* 🔥 POSICIONAMENTO */
+  position: fixed;
+
+  top: 90px;      /* abaixo do header */
+  right: 32px;    /* perto do botão */
+
+  z-index: 99999;
+
+  animation: modalPop .25s ease;
+}
+
+
+
+/* Animação */
+
+@keyframes modalPop {
+  from {
+    transform: scale(.9);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+
+/* Header */
+
+.mindmap-modal-advanced h2 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.mindmap-modal-advanced p {
+  font-size: 13px;
+  opacity: .6;
+  margin-bottom: 8px;
+}
+
+
+/* ===============================
+   Seleção de Tipo
+================================ */
+
+.modal-type-select {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+
+/* Botões */
+
+.modal-type-select button {
+  flex: 1;
+
+  background: linear-gradient(
+    160deg,
+    #0a0a0a,
+    #050505
+  );
+
+  border: 1px solid #222;
+  border-radius: 14px;
+
+  padding: 14px 0;
+
+  cursor: pointer;
+
+  color: white;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 20px;
+
+  transition: all .25s ease;
+
+  position: relative;
+  overflow: hidden;
+}
+
+
+/* Texto */
+
+.modal-type-select span {
+  font-size: 12px;
+  opacity: .7;
+}
+
+
+/* Hover */
+
+.modal-type-select button:hover {
+  background: #111;
+  transform: translateY(-2px);
+}
+
+
+/* Active */
+
+.modal-type-select button.active {
+  transform: translateY(-3px) scale(1.02);
+}
+
+
+/* Glow */
+
+.modal-type-select button.active::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  border-radius: inherit;
+
+  box-shadow: inset 0 0 20px rgba(255,255,255,.04);
+
+  pointer-events: none;
+}
+
+
+/* Cores */
+
+.modal-type-select .goal.active {
+  border-color: #ff2d2d;
+  box-shadow: 0 0 14px rgba(255,45,45,.5);
+}
+
+.modal-type-select .task.active {
+  border-color: orange;
+  box-shadow: 0 0 14px rgba(255,165,0,.5);
+}
+
+.modal-type-select .habit.active {
+  border-color: #00ff9c;
+  box-shadow: 0 0 14px rgba(0,255,156,.5);
+}
+
+
+/* ===============================
+   Input
+================================ */
+
+.mindmap-modal-advanced input {
+  background: linear-gradient(
+    160deg,
+    #070707,
+    #030303
+  );
+
+  border: 1px solid #222;
+
+  border-radius: 12px;
+
+  padding: 12px 14px;
+
+  color: white;
+
+  font-size: 14px;
+
+  transition: .2s;
+}
+
+
+.mindmap-modal-advanced input::placeholder {
+  color: #666;
+}
+
+
+.mindmap-modal-advanced input:focus {
+  outline: none;
+
+  border-color: #d40000;
+
+  box-shadow: 0 0 0 2px rgba(212,0,0,.2);
+}
+
+
+/* ===============================
+   Actions
+================================ */
+
+.modal-actions-advanced {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  margin-top: 10px;
+}
+
+
+/* Botões */
+
+.modal-actions-advanced button {
+  padding: 8px 18px;
+
+  border-radius: 12px;
+  border: none;
+
+  cursor: pointer;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  transition: all .2s ease;
+}
+
+
+/* Cancelar */
+
+.modal-actions-advanced .cancel {
+  background: #2a2a2a;
+  color: white;
+}
+
+.modal-actions-advanced .cancel:hover {
+  background: #3a3a3a;
+}
+
+
+/* Confirmar */
+
+.modal-actions-advanced .confirm {
+  background: linear-gradient(
+    160deg,
+    #d40000,
+    #ff1c1c
+  );
+
+  color: white;
+}
+
+.modal-actions-advanced .confirm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(255,28,28,.5);
+}
+
+/* ===============================
+   Select Meta (Task)
+================================ */
+
+.mindmap-goal-select {
+
+  width: 100%;
+
+  background: #050505;
+
+  border: 1px solid #222;
+  border-radius: 10px;
+
+  padding: 10px 12px;
+
+  color: white;
+  font-size: 14px;
+
+  outline: none;
+
+  transition: .2s;
+
+  cursor: pointer;
+}
+
+
+.mindmap-goal-select:hover {
+  border-color: #ff2d2d;
+}
+
+
+.mindmap-goal-select:focus {
+  border-color: #ff2d2d;
+  box-shadow: 0 0 8px rgba(255,45,45,.4);
+}
+
+
+.mindmap-goal-select option {
+  background: #050505;
+  color: white;
+}
+
+/* Barra superior do mapa */
+.mindmap-toolbar {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+
+  display: flex;
+  gap: 12px;
+
+  padding: 8px 12px;
+
+  background: rgba(10, 10, 10, 0.6);
+  border: 1px solid rgba(255, 0, 0, 0.4);
+  border-radius: 12px;
+
+  backdrop-filter: blur(8px);
+
+  z-index: 999;
+}
+
+
+/* Botão baixar */
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 14px;
+
+  background: transparent;
+  border: 1px solid red;
+  border-radius: 8px;
+
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+
+/* Hover */
+.download-btn:hover {
+  background: red;
+  color: black;
+
+  box-shadow: 0 0 12px red;
+
+  transform: translateY(-1px);
+}
+
+
+/* Clique */
+.download-btn:active {
+  transform: scale(0.95);
+}
+
+
+/* Ícone */
+.download-btn span,
+.download-btn svg {
+  font-size: 15px;
+}
+
+  
+
+/* ===============================
+   FIX TELA PRETA REACT FLOW
+================================ */
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100vw;
+  margin: 0;
+}
+
+/* Cadeia inteira */
+.mindmap-layout,
+.mindmap-page,
+.mindmap-wrapper,
+.mindmap-canvas,
+.mindmap-flow-wrapper {
+  width: 100%;
+
+  min-height: 0;
+  min-width: 0;
+
+  display: flex;
+  flex: 1;
+}
+
+/* Wrapper direto do ReactFlow */
+.mindmap-flow-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ReactFlow */
+.mindmap-flow-wrapper .react-flow {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+/* ===============================
+   Painel de Metas (Filtro)
+================================ */
+
+.goal-panel {
+  position: absolute;
+  top: 80px;
+  left: 15px;
+
+  width: 220px;
+  max-height: calc(100vh - 120px);
+
+  background: rgba(10, 10, 10, 0.9);
+
+  border: 1px solid rgba(255, 0, 0, 0.4);
+  border-radius: 14px;
+
+  padding: 14px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  backdrop-filter: blur(8px);
+
+  z-index: 500;
+
+  transition: all 0.3s ease;
+}
+
+
+/* ===============================
+   Painel Fechado
+================================ */
+
+.goal-panel.closed {
+  width: 60px;
+  padding: 10px 6px;
+  overflow: hidden;
+}
+
+
+/* Esconde conteúdo quando fechado */
+.goal-panel.closed .goal-filter {
+  display: none;
+}
+
+
+/* ===============================
+   Botão Toggle
+================================ */
+
+.toggle-goals {
+  background: linear-gradient(
+    160deg,
+    #d40000,
+    #ff1c1c
+  );
+
+  border: none;
+  border-radius: 10px;
+
+  padding: 6px 10px;
+
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+
+.toggle-goals:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+
+/* Quando fechado muda visual */
+.goal-panel.closed .toggle-goals {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+
+  padding: 8px 4px;
+  font-size: 11px;
+}
+
+
+/* ===============================
+   Lista de Metas
+================================ */
+
+.goal-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+
+/* Scroll bonito */
+.goal-filter::-webkit-scrollbar {
+  width: 5px;
+}
+
+.goal-filter::-webkit-scrollbar-thumb {
+  background: #ff3030;
+  border-radius: 5px;
+}
+
+.goal-filter::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+
+/* ===============================
+   Item Meta
+================================ */
+
+.goal-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 12px;
+
+  padding: 6px 8px;
+
+  border-radius: 8px;
+
+  background: rgba(255,255,255,0.02);
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+
+.goal-item:hover {
+  background: rgba(255, 48, 48, 0.15);
+}
+
+
+/* Checkbox */
+.goal-item input {
+  accent-color: #ff3030;
+  cursor: pointer;
+}
+/* ===============================
+   MOBILE PATCH DEFINITIVO 
+================================ */
+
+@media (max-width: 768px) {
+
+  /* Isola o lock de scroll só no MindMap */
+  .mindmap-root {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  /* Layout principal */
+  .mindmap-layout {
+    height: 100%;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+  }
+
+  .mindmap-page {
+    flex: 1;
+
+    min-height: 0;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+  }
+
+  .mindmap-wrapper {
+    flex: 1;
+
+    min-height: 0;
+    min-width: 0;
+
+    display: flex;
+    position: relative;
+
+    overflow: hidden;
+  }
+
+  /* Canvas */
+  .mindmap-canvas {
+    flex: 1;
+
+    width: 100%;
+    height: 100%;
+
+    min-height: 0;
+    min-width: 0;
+
+    position: relative;
+
+    overflow: hidden;
+
+    background: #050505;
+  }
+
+  .mindmap-canvas .react-flow {
+    width: 100%;
+    height: 100%;
+
+    min-height: 0;
+    min-width: 0;
+
+    overflow: hidden;
+  }
+
+  /* Sidebar */
+  .sidebar,
+  .sidebar-wrapper {
+    height: 100%;
+    max-height: 100%;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Corrige flex bug só no mapa */
+  .mindmap-canvas *,
+  .react-flow * {
+    min-height: 0;
+    min-width: 0;
+  }
+
+}
+
+
+/* ===============================
+   MELHORANDO INTERFACE MOBILE
+================================ */
+
+@media (max-width: 768px) {
+
+  /* Remove minimapa */
+  .react-flow__minimap {
+    display: none !important;
+  }
+
+  /* Legenda menor */
+  .mindmap-legend {
+    width: 110px;
+    padding: 6px 8px;
+
+    bottom: 12px;
+    right: 8px;
+
+    border-radius: 10px;
+    opacity: 0.85;
+  }
+
+  .mindmap-legend h3 {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  .mindmap-legend li {
+    font-size: 9px;
+    gap: 4px;
+    padding: 2px 0;
+  }
+
+  .mindmap-legend .icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Painel de metas mais perto do header */
+  .goal-panel {
+    top: 10px;
+    bottom: auto;
+
+    left: 8px;
+
+    width: 160px;
+    max-height: 45vh;
+
+    padding: 8px;
+  }
+
+  .goal-panel.closed {
+    width: 44px;
+  }
+
+  /* Botão toggle */
+  .toggle-goals {
+    font-size: 11px;
+    padding: 5px 8px;
+    border-radius: 8px;
+  }
+
+  /* Controles menores */
+  .react-flow__controls {
+    transform: scale(0.75);
+    opacity: 0.7;
+  }
+
+}

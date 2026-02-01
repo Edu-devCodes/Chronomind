@@ -1,0 +1,61 @@
+/* TELA */
+.fire-screen {
+  position: fixed;
+  inset: 0;
+  background: #050505;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+/* LOGO */
+.fire-logo {
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(255, 70, 0, 0.8));
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* animação leve de pulsação */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+/* FAÍSCAS */
+.fire-rain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.spark {
+  position: absolute;
+  width: 3px;
+  height: 14px;
+  background: linear-gradient(to bottom, #ff4300, #ff0000);
+  border-radius: 2px;
+  filter: drop-shadow(0 0 6px #ff2a00);
+
+  left: calc(var(--rand-x) * 100%);
+  top: calc(var(--rand-y) * -250px);
+
+  animation: fall var(--speed) linear infinite;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(120vh) rotate(180deg);
+    opacity: 0;
+  }
+}

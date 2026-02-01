@@ -1,0 +1,454 @@
+/* BASE */
+
+.settings-layout {
+  display: flex;
+  height: 100vh;
+  background: radial-gradient(circle at top, #0d0d0d, #050505);
+  color: white;
+}
+
+
+.settings-content {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+
+
+/* HEADER */
+
+.settings-header h1 {
+  font-size: 34px;
+  letter-spacing: 0.5px;
+}
+
+.settings-header p {
+  color: #888;
+  margin-top: 4px;
+}
+
+
+
+/* TABS */
+
+.settings-tabs {
+  margin: 30px 0;
+  background: #0f0f0f;
+  padding: 6px;
+  border-radius: 50px;
+  width: fit-content;
+  display: flex;
+}
+
+
+.settings-tabs button {
+  background: none;
+  border: none;
+  color: #aaa;
+
+  padding: 10px 26px;
+  border-radius: 50px;
+
+  cursor: pointer;
+  font-size: 14px;
+}
+
+
+.settings-tabs button.active {
+  background: linear-gradient(135deg, #1c1c1c, #111);
+  color: white;
+}
+
+
+
+/* ================= PROFILE ================= */
+
+.profile-premium {
+  background: linear-gradient(180deg, #0f0f0f, #0b0b0b);
+  border-radius: 20px;
+  padding: 35px;
+
+  box-shadow: 0 0 0 1px #111, 0 25px 50px rgba(0,0,0,0.6);
+}
+
+
+
+/* HERO */
+
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #111;
+}
+
+
+
+/* AVATAR */
+
+.hero-avatar {
+  width: 110px;
+  height: 110px;
+
+  background: linear-gradient(135deg, #ff2a2a, #b80000);
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 40px;
+  font-weight: bold;
+
+  cursor: pointer;
+  position: relative;
+}
+
+
+.hero-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+
+.hero-edit {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+
+  background: #111;
+  padding: 6px;
+
+  border-radius: 50%;
+}
+
+
+
+/* INFO */
+
+.hero-info h2 {
+  font-size: 24px;
+}
+
+.hero-info p {
+  color: #777;
+  max-width: 400px;
+  line-height: 1.4;
+}
+
+
+
+/* FORM */
+
+.profile-form-premium {
+  margin-top: 35px;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+}
+
+
+.field.full {
+  grid-column: span 2;
+}
+
+
+.field label {
+  font-size: 13px;
+  color: #aaa;
+  margin-bottom: 6px;
+  display: block;
+}
+
+
+
+/* INPUT */
+
+.field-input {
+  background: #151515;
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 14px;
+
+  border: 1px solid #1f1f1f;
+}
+
+
+.field-input svg {
+  color: #888;
+}
+
+
+.field-input input,
+.field-input textarea {
+  flex: 1;
+  background: none;
+  border: none;
+  color: white;
+  outline: none;
+  resize: none;
+  font-size: 14px;
+}
+
+
+.field-input textarea {
+  min-height: 80px;
+}
+
+
+.field-input.locked {
+  opacity: 0.6;
+}
+
+
+
+/* BUTTON */
+
+.premium-save {
+  grid-column: span 2;
+
+  background: linear-gradient(135deg, #ff2a2a, #b80000);
+
+  border: none;
+
+  padding: 14px;
+  border-radius: 12px;
+
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+
+  letter-spacing: 0.4px;
+}
+
+
+
+/* ================= NOTIFY ================= */
+
+.notify-premium {
+  background: linear-gradient(180deg, #0f0f0f, #0b0b0b);
+  border-radius: 20px;
+  padding: 30px;
+
+  box-shadow: 0 0 0 1px #111, 0 25px 50px rgba(0,0,0,0.6);
+}
+
+
+
+/* HERO */
+
+.notify-hero {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  padding-bottom: 20px;
+  margin-bottom: 25px;
+
+  border-bottom: 1px solid #111;
+}
+
+
+
+/* MINI AVATAR */
+
+.mini-avatar {
+  width: 48px;
+  height: 48px;
+
+  background: linear-gradient(135deg, #ff2a2a, #b80000);
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+}
+
+
+
+/* ITEM */
+
+.notify-item {
+  background: #151515;
+
+  border-radius: 14px;
+  padding: 18px 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 14px;
+}
+
+
+.notify-item p {
+  color: #777;
+  font-size: 13px;
+}
+
+
+
+/* SWITCH */
+
+.switch {
+  width: 46px;
+  height: 24px;
+  position: relative;
+}
+
+
+.switch input {
+  display: none;
+}
+
+
+.switch span {
+  background: #333;
+
+  position: absolute;
+  inset: 0;
+
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+
+.switch span::before {
+  content: "";
+
+  width: 18px;
+  height: 18px;
+
+  background: black;
+
+  border-radius: 50%;
+
+  position: absolute;
+
+  top: 3px;
+  left: 3px;
+
+  transition: 0.3s;
+}
+
+
+.switch input:checked + span {
+  background: #e11;
+}
+
+
+.switch input:checked + span::before {
+  transform: translateX(22px);
+}
+
+/* =============================== 
+   RESPONSIVE MOBILE
+================================ */
+@media (max-width: 900px) {
+
+  .settings-layout {
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .settings-content {
+    padding: 20px;
+  }
+
+  /* HEADER */
+  .settings-header h1 {
+    font-size: 28px;
+  }
+
+  .settings-header p {
+    font-size: 13px;
+  }
+
+  /* TABS */
+  .settings-tabs {
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .settings-tabs button {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  /* PROFILE HERO */
+  .profile-hero {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    text-align: center;
+    padding-bottom: 20px;
+  }
+
+  .hero-avatar {
+    width: 90px;
+    height: 90px;
+    font-size: 32px;
+  }
+
+  .hero-info h2 {
+    font-size: 20px;
+  }
+
+  .hero-info p {
+    max-width: 100%;
+    font-size: 13px;
+  }
+
+  /* FORM */
+  .profile-form-premium {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .field.full {
+    grid-column: span 1;
+  }
+
+  .premium-save {
+    width: 100%;
+    grid-column: span 1;
+  }
+
+  /* NOTIFY HERO */
+  .notify-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .mini-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* NOTIFY ITEM */
+  .notify-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .switch {
+    margin-top: 8px;
+  }
+}

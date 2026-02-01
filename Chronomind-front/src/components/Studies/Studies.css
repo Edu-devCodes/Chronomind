@@ -1,0 +1,577 @@
+/* GRID PRINCIPAL */
+.studies-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+/* HEADER */
+.studies-header span {
+  color: #ff2d2d;
+}
+
+
+/* ===== RESUMOS ===== */
+.summary-area {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.summary-tabs {
+  display: flex;
+  gap: 12px;
+}
+
+.summary-tabs button {
+  flex: 1;
+  background: #0b0b0b;
+  border: 1px solid #1a1a1a;
+  color: #aaa;
+  padding: 10px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.summary-tabs .active {
+  background: #111;
+  color: #fff;
+  border-color: #ff2d2d;
+}
+
+.summary-box {
+  background: #0b0b0b;
+  padding: 24px;
+  border-radius: 24px;
+  border: 1px solid #1a1a1a;
+}
+
+.summary-type {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.summary-type button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid #2a2a2a;
+  background: transparent;
+  color: #aaa;
+}
+
+.summary-type .active {
+  background: #111;
+  color: #fff;
+  border-color: #ff2d2d;
+}
+
+.summary-input {
+  display: flex;
+  gap: 12px;
+}
+
+.summary-input input {
+  flex: 1;
+  background: #000;
+  border: 1px solid #2a2a2a;
+  padding: 12px;
+  border-radius: 14px;
+  color: white;
+}
+
+.generate-btn {
+  padding: 12px 20px;
+  background: #ff2d2d;
+  border: none;
+  border-radius: 14px;
+  color: white;
+  cursor: pointer;
+}
+
+/* ===== RESUMOS SALVOS ===== */
+.saved-summaries {
+  background: #0b0b0b;
+  border-radius: 24px;
+  padding: 20px;
+  border: 1px solid #1a1a1a;
+}
+
+.summary-item h4 {
+  margin: 0;
+}
+
+.summary-item p {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.date {
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+/* input do pdf */
+
+.file-upload {
+  display: inline-block;
+  padding-right: 120px;
+}
+
+.file-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.08);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.file-btn:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+.pdf-drop {
+  padding: 16px;
+  border: 2px dashed rgba(255,255,255,0.2);
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.pdf-ready {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pdf-result {
+  margin-top: 12px;
+}
+
+.close-btn {
+  color: #fff;
+  margin-top: 12px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* css do x */
+.pdf-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.remove-pdf {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.remove-pdf:hover {
+  color: #ff6b6b;
+}
+
+/* css da parte do video de reusmos com ia */
+.video-box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.video-box input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.video-box input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.video-box input:focus {
+   border-color: #ff2d2d;
+}
+
+.generate-btn {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #8a080e, #ff0303);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.generate-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* ESTADOS DE CARREGAMENTOS DE RESUMO DO YT */
+.loading-box {
+  margin-top: 30px;
+  padding: 30px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top: 3px solid #6ee7ff;
+  border-radius: 50%;
+  margin: 0 auto 18px;
+}
+
+.loading-hint {
+  display: block;
+  margin-top: 12px;
+  font-size: 13px;
+  opacity: 0.6;
+}
+
+/* ===============================
+   CONTAINER
+================================ */
+.saved-summaries {
+  margin-top: 32px;
+}
+
+.saved-summaries h3 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: 0.4px;
+  color: #f1f1f1;
+}
+
+/* ===============================
+   CARD
+================================ */
+/* ===============================
+   CARD LIMPO E MODERNO
+================================ */
+.summary-item {
+  position: relative; /* necessário para o ::after */
+  background: rgba(255, 255, 255, 0.02); /* fundo mais suave */
+  backdrop-filter: blur(4px); /* blur leve */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+
+  padding: 14px 16px;
+  margin-bottom: 12px;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* sombra sutil */
+}
+
+.summary-item:hover {
+  transform: translateY(-1.5px);
+  border-color: rgba(110, 168, 255, 0.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* ===============================
+   TITLE MAIS CLEAN
+================================ */
+.summary-item h4 {
+  font-size: 14px;
+  font-weight: 400; /* fonte leve */
+  color: #e0e0e0; /* cinza suave */
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+/* ===============================
+   TEXT LEVE E LEGÍVEL
+================================ */
+.summary-item p {
+  font-size: 12px;
+  font-weight: 300; /* texto leve */
+  line-height: 1.5;
+  color: #b0b0b0; /* cor mais suave ainda */
+  margin-bottom: 8px;
+}
+
+/* ===============================
+   DATE SUAVE
+================================ */
+.summary-item .date {
+  font-size: 11px;
+  font-weight: 300;
+  color: #999999;
+  display: block;
+  text-align: right;
+}
+
+/* ===============================
+   SETA ➜ DISCRETA
+================================ */
+.summary-item::after {
+  content: "➜";
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  opacity: 0.15;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.summary-item:hover::after {
+  opacity: 0.35;
+}
+
+/* ===============================
+   MOBILE
+================================ */
+@media (max-width: 600px) {
+  .summary-item {
+    padding: 12px 14px;
+  }
+
+  .summary-item h4 {
+    font-size: 13px;
+  }
+
+  .summary-item p {
+    font-size: 11px;
+  }
+
+  .summary-item::after {
+    font-size: 12px;
+    right: 10px;
+    top: 10px;
+  }
+}
+
+
+/* ===============================
+   STATES
+================================ */
+.loading {
+  text-align: center;
+  font-size: 13px;
+  opacity: 0.7;
+  margin: 20px 0;
+}
+
+.end {
+  text-align: center;
+  font-size: 13px;
+  opacity: 0.6;
+  margin-top: 18px;
+}
+
+/* ===============================
+   MOBILE
+================================ */
+
+/* ===============================
+   INPUT INLINE YOUTUBE
+================================ */
+
+.video-box-inline {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.video-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  transition: all 0.2s ease;
+}
+
+.video-input-wrapper:focus-within {
+  border-color: #ff2d2d;
+  box-shadow: 0 0 0 1px rgba(255, 45, 45, 0.4);
+}
+
+/* Ícone do YouTube */
+.yt-icon {
+  color: #ff2d2d;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* Input */
+.video-input-wrapper input {
+  flex: 1;
+
+  background: transparent;
+  border: none;
+  outline: none;
+
+  color: #fff;
+  font-size: 15px;
+}
+
+.video-input-wrapper input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* Botão */
+.video-generate-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 14px;
+
+  border-radius: 10px;
+
+  border: none;
+
+  background: linear-gradient(135deg, #8a080e, #ff0303);
+
+  color: white;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.video-generate-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.video-generate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   PDF PADRÃO YOUTUBE
+================================ */
+
+.pdf-box {
+  display: flex;
+  gap: 10px;
+
+  align-items: center;
+
+  padding: 14px;
+
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.04);
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Input fake */
+.pdf-input {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+
+  padding: 12px 14px;
+
+  border-radius: 10px;
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  background: rgba(0, 0, 0, 0.4);
+
+  cursor: pointer;
+
+  transition: border 0.2s ease;
+}
+
+.pdf-input:hover {
+  border-color: #ff2d2d;
+}
+
+/* Placeholder */
+.pdf-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+
+  font-size: 14px;
+}
+
+/* Arquivo selecionado */
+.pdf-selected {
+  font-size: 14px;
+
+  color: #fff;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Botão remover */
+.pdf-remove-btn {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background: transparent;
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  color: rgba(255, 255, 255, 0.6);
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.pdf-remove-btn:hover {
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.08);
+}
+
+/* Botão gerar com ícone */
+.generate-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
