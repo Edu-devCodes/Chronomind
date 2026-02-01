@@ -1,4 +1,4 @@
-import StatsService from "../services/StatsService.js";
+import StatsService from "../services/statsService.js";
 
 import calculateScore from "../utils/scoreCalculator.js";
 import { checkAchievements } from "../utils/achievementRules.js";
