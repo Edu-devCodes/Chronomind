@@ -22,7 +22,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import PageFade from "./LoginAnimation/PageFade";
 import "./index.css";
 
-import LoadingSplash from "./LoginAnimation/LoadingSplash";
 
 export default function Login() {
 
@@ -31,33 +30,9 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [showPass, setShowPass] = useState(false);
-  const [showSplash, setShowSplash] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
-
-
-  /* Splash */
-  useEffect(() => {
-
-    const cameFromRegister = location.state?.cameFromRegister === true;
-    const hasPlayed = localStorage.getItem("chronomind_splash_played");
-
-    if (cameFromRegister || hasPlayed) {
-      setShowSplash(false);
-      return;
-    }
-
-    setShowSplash(true);
-
-    const timeout = setTimeout(() => {
-      setShowSplash(false);
-      localStorage.setItem("chronomind_splash_played", "true");
-    }, 3500);
-
-    return () => clearTimeout(timeout);
-
-  }, [location]);
 
 
   async function handleSubmit(e) {
@@ -82,7 +57,6 @@ export default function Login() {
   }
 
 
-  if (showSplash) return <LoadingSplash />;
 
 
   return (
