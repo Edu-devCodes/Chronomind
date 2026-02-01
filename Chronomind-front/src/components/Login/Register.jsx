@@ -30,8 +30,8 @@ export default function Register() {
   const [confirmar, setConfirmar] = useState("");
   const [code, setCode] = useState("");
   const [timer, setTimer] = useState(0);
-
   const [redirecting, setRedirecting] = useState(false);
+  const [sendingCode, setSendingCode] = useState(false);
 
 
   async function enviarCode() {
@@ -41,27 +41,30 @@ export default function Register() {
       return;
     }
 
-    try {
+    if (sendingCode) return;
 
+    setSendingCode(true);
+
+    try {
       await sendCode(email);
 
       toast.success("Código enviado!");
-
       setTimer(60);
 
       const interval = setInterval(() => {
-
         setTimer(t => {
           if (t <= 1) clearInterval(interval);
           return t - 1;
         });
-
       }, 1000);
 
     } catch {
       toast.error("Erro ao enviar código.");
+    } finally {
+      setSendingCode(false);
     }
   }
+
 
 
   async function handleSubmit(e) {
@@ -249,11 +252,12 @@ export default function Register() {
                 <button
                   type="button"
                   className="code-btn"
-                  disabled={timer > 0}
+                  disabled={timer > 0 || sendingCode} // <-- atualize aqui
                   onClick={enviarCode}
                 >
                   <FaPaperPlane />
                 </button>
+
 
               </div>
 

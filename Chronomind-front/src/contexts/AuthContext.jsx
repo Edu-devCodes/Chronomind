@@ -12,15 +12,8 @@ export function AuthProvider({ children }) {
   ========================= */
   async function loadUser() {
     try {
-      if (!import.meta.env.VITE_API_ME) {
-        setUser(null);
-        return;
-      }
-
-      const res = await api.get(import.meta.env.VITE_API_ME);
-
+      const res = await api.get("/auth/me");
       setUser(res.data?.user || null);
-
       console.log("Auth: sessão carregada", res.data);
     } catch (err) {
       console.warn("Auth: erro ao carregar sessão", err);
@@ -35,13 +28,8 @@ export function AuthProvider({ children }) {
   ========================= */
   async function updateProfile(data) {
     try {
-      const res = await api.put(
-        import.meta.env.VITE_API_UPDATE_PROFILE,
-        data
-      );
-
+      const res = await api.put("/auth/meUpdate", data); // endpoint relativo
       setUser(res.data.user);
-
       return res.data;
     } catch (err) {
       console.error("Erro ao atualizar perfil", err);
@@ -55,7 +43,7 @@ export function AuthProvider({ children }) {
   async function sendCode(email) {
     if (!email) throw new Error("Email é obrigatório");
 
-    await api.post(import.meta.env.VITE_API_SEND_CODE, { email });
+    await api.post("/auth/send-code", { email });
 
     return true;
   }
@@ -64,7 +52,7 @@ export function AuthProvider({ children }) {
      LOGIN
   ========================= */
   async function login(email, senha) {
-    const res = await api.post(import.meta.env.VITE_API_LOGIN, {
+    const res = await api.post("/auth/login", {
       email,
       senha
     });
@@ -78,14 +66,14 @@ export function AuthProvider({ children }) {
      REGISTER
   ========================= */
   async function register(payload) {
-    return api.post(import.meta.env.VITE_API_REGISTER, payload);
+    return api.post("/auth/register", payload);
   }
 
   /* =========================
      LOGOUT
   ========================= */
   async function logout() {
-    await api.post(import.meta.env.VITE_API_LOGOUT);
+    await api.post("/auth/logout");
 
     setUser(null);
   }
