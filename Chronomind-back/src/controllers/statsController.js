@@ -1,4 +1,5 @@
-import StatsService from "../services/StatsService.js";
+import StatsService from "../services/statsService.js";
+
 
 
 export async function getDashboardStats(req, res) {
