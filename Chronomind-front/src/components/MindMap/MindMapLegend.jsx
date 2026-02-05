@@ -3,7 +3,7 @@ import {
   Target,
   Zap,
   CheckSquare,
-  Lightbulb
+  Layers
 } from "lucide-react";
 
 export default function MindMapLegend() {
@@ -30,8 +30,8 @@ export default function MindMapLegend() {
         </li>
 
         <li>
-          <Lightbulb className="icon idea" />
-          Ideia
+          <Layers className="icon category" />
+          Categoria
         </li>
 
       </ul>

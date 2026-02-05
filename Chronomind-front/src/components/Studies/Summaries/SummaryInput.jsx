@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 import { FiYoutube, FiSend, FiX } from "react-icons/fi";
@@ -23,6 +23,7 @@ export default function SummaryInput({
   const [result, setResult] = useState(null);
   const [loadingStep, setLoadingStep] = useState(0);
 
+  const resultRef = useRef(null);
   /* ===============================
      LOADING STEPS (DOPAMINA)
   =============================== */
@@ -46,6 +47,13 @@ export default function SummaryInput({
     setLoading(false);
     setLoadingStep(0);
   }, [selectedSummary]);
+
+  // ✅ Scroll confiável após o resumo ser renderizado
+  useLayoutEffect(() => {
+    if (resultRef.current) {
+      resultRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [result]);
 
   /* ===============================
      ANIMAÇÃO DE LOADING
@@ -139,6 +147,19 @@ export default function SummaryInput({
     if (input) input.value = "";
   }
 
+  function formatSummary(text) {
+    if (!text) return "";
+
+    // Quebra por linhas duplas ou pontos
+    const paragraphs = text.split(/\n\n|\. /).map(p => p.trim()).filter(Boolean);
+
+    // Retorna um array de JSX, cada parágrafo em <p>
+    return paragraphs.map((p, i) => (
+      <p key={i} style={{ marginBottom: "1em", lineHeight: "1.5em" }}>
+        {p}
+      </p>
+    ));
+  }
   /* ===============================
      RENDER
   =============================== */
@@ -199,61 +220,61 @@ export default function SummaryInput({
         )}
       </AnimatePresence>
 
-{/* ================= PDF ================= */}
-{!loading && type === "pdf" && !result && (
-  <motion.div
-    className="pdf-box"
-    initial={{ opacity: 0, y: 6 }}
-    animate={{ opacity: 1, y: 0 }}
-  >
+      {/* ================= PDF ================= */}
+      {!loading && type === "pdf" && !result && (
+        <motion.div
+          className="pdf-box"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
 
-    {/* INPUT FAKE */}
-    <label className="pdf-input">
+          {/* INPUT FAKE */}
+          <label className="pdf-input">
 
-      <input
-        type="file"
-        accept="application/pdf"
-        onChange={handleFileChange}
-        hidden
-      />
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={handleFileChange}
+              hidden
+            />
 
-      {!file && (
-        <span className="pdf-placeholder">
-          📄 Selecionar PDF
-        </span>
+            {!file && (
+              <span className="pdf-placeholder">
+                📄 Selecionar PDF
+              </span>
+            )}
+
+            {file && (
+              <span className="pdf-selected">
+                📄 {file.name}
+              </span>
+            )}
+
+          </label>
+
+          {/* BOTÃO REMOVER */}
+          {file && (
+            <button
+              className="pdf-remove-btn"
+              onClick={resetAll}
+              title="Remover PDF"
+            >
+              <FiX size={16} />
+            </button>
+          )}
+
+          {/* BOTÃO GERAR */}
+          <button
+            className="generate-btn"
+            onClick={handleGeneratePDF}
+            disabled={!file}
+          >
+            <FiSend size={18} />
+            Gerar
+          </button>
+
+        </motion.div>
       )}
-
-      {file && (
-        <span className="pdf-selected">
-          📄 {file.name}
-        </span>
-      )}
-
-    </label>
-
-    {/* BOTÃO REMOVER */}
-    {file && (
-      <button
-        className="pdf-remove-btn"
-        onClick={resetAll}
-        title="Remover PDF"
-      >
-        <FiX size={16} />
-      </button>
-    )}
-
-    {/* BOTÃO GERAR */}
-    <button
-      className="generate-btn"
-      onClick={handleGeneratePDF}
-      disabled={!file}
-    >
-      <FiSend size={18} />
-      Gerar
-    </button>
-
-  </motion.div>
-)}
 
 
       {/* ================= YOUTUBE ================= */}
@@ -293,11 +314,14 @@ export default function SummaryInput({
       {result && !loading && (
         <motion.div
           className="summary-result"
+          ref={resultRef} // <-- adiciona aqui
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <h4>{result.title || "Resumo"}</h4>
-          <p>{result.summary}</p>
+          <div className="summary-text">
+            {formatSummary(result.summary)}
+          </div>
 
           <button className="close-btn" onClick={resetAll}>
             Novo resumo

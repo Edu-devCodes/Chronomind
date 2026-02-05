@@ -38,7 +38,6 @@ export default function DashboardCharts() {
 
       const res = await getChartsStats();
 
-      console.log("📊 Stats:", res);
 
       setData(res);
 
@@ -86,12 +85,20 @@ export default function DashboardCharts() {
     pomodorosPerDay = [],
     tasks = [],
     habits = [],
-    goals = []
+    goals = [],
+    overallProgress
 
   } = data;
 
 
-
+// Função utilitária para formatar minutos em "Xh Ym"
+// Função utilitária
+function formatMinutesToHM(minutes) {
+  minutes = Math.round(minutes); // garante inteiro
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${h}h ${m}m`;
+}
   return (
 
     <div className="charts-wrapper">
@@ -107,14 +114,14 @@ export default function DashboardCharts() {
             {weeklyGrowth >= 0 ? "+" : ""}
             {weeklyGrowth}%
           </strong>
-          <span>Progresso 🚀</span>
+          <span>vs semana passada 📊</span>
         </div>
 
 
         <div className="stat-card">
-          <h4>Taxa de Conclusão</h4>
-          <strong>{completionRate}%</strong>
-          <span>Constância 💪</span>
+          <h4>Consistência</h4>
+          <strong>{consistency}%</strong>
+          <span>Dias produtivos 📅</span>
         </div>
 
 
@@ -128,9 +135,9 @@ export default function DashboardCharts() {
 
 
         <div className="stat-card">
-          <h4>Consistência</h4>
-          <strong>{consistency}%</strong>
-          <span>Disciplina 🧠</span>
+          <h4>Taxa de Conclusão</h4>
+          <strong>{completionRate}%</strong>
+          <span>Produtividade geral ⚡</span>
         </div>
 
       </div>
@@ -150,11 +157,18 @@ export default function DashboardCharts() {
 
             <LineChart data={pomodorosPerDay}>
 
+              {/* Eixo X: datas */}
               <XAxis dataKey="date" />
-              <YAxis />
 
-              <Tooltip />
+              {/* Eixo Y: minutos */}
+<YAxis tickFormatter={formatMinutesToHM} />
 
+<Tooltip 
+  formatter={(value) => formatMinutesToHM(value)} 
+  labelFormatter={(label) => `Dia: ${label}`}
+/>
+
+              {/* Linha de total de minutos por dia */}
               <Line
                 dataKey="total"
                 stroke="#ff2d2d"
@@ -179,7 +193,7 @@ export default function DashboardCharts() {
             <BarChart data={tasks}>
 
               <XAxis dataKey="name" />
-              <YAxis />
+              <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
 
               <Tooltip />
 
@@ -267,26 +281,48 @@ export default function DashboardCharts() {
       </div>
 
 
+
       {/* ================= BIG ================= */}
 
       <div className="chart-card big">
 
-        <h3>📊 Evolução</h3>
+        <h3>📊 Evolução Geral (30 dias)</h3>
 
         <ResponsiveContainer width="100%" height={320}>
 
-          <LineChart data={pomodorosPerDay}>
+          <LineChart data={overallProgress}>
 
             <XAxis dataKey="date" />
+
             <YAxis />
 
             <Tooltip />
 
+            {/* Foco */}
             <Line
-              dataKey="total"
+              type="monotone"
+              dataKey="pomodoros"
               stroke="#ff2d2d"
-              strokeWidth={4}
-              dot
+              strokeWidth={3}
+              name="Foco (min)"
+            />
+
+            {/* Tasks */}
+            <Line
+              type="monotone"
+              dataKey="tasks"
+              stroke="#6ee7ff"
+              strokeWidth={2}
+              name="Tasks"
+            />
+
+            {/* Hábitos */}
+            <Line
+              type="monotone"
+              dataKey="habits"
+              stroke="#22c55e"
+              strokeWidth={2}
+              name="Hábitos"
             />
 
           </LineChart>
@@ -302,8 +338,8 @@ export default function DashboardCharts() {
         >
 
           {weeklyGrowth >= 0
-            ? "↗ Continue consistente 💪"
-            : "↘ Vamos recuperar o ritmo 🔥"}
+            ? "↗ Seu ritmo geral está crescendo 💪"
+            : "↘ Vamos recuperar o foco 🔥"}
 
         </p>
 

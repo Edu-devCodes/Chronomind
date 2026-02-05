@@ -20,6 +20,7 @@ class StatsService {
       tasksStats,
       habitsStats,
       focusByTask,
+      overallProgress,
 
       weeklyGrowth,
       completionRate,
@@ -34,6 +35,7 @@ class StatsService {
       this.tasksStats(uid),
       this.habitsStats(uid),
       this.focusByTask(uid),
+      this.overallProgress(uid),
 
       // Cards
       this.weeklyGrowth(uid),
@@ -58,7 +60,8 @@ class StatsService {
       tasks: tasksStats,
       habits: habitsStats,
       focusByTask,
-      goals: goalsStats
+      goals: goalsStats,
+      overallProgress
     };
   }
 
@@ -144,7 +147,7 @@ class StatsService {
 
     return data.map(d => ({
       date: d._id,
-      total: Math.round(d.total / 60)
+      total: +(d.total / 60 / 60).toFixed(2) 
     }));
   }
 
@@ -161,9 +164,19 @@ class StatsService {
       })
     ]);
 
+    if (total === 0) {
+      return [
+        { name: "Concluídas", value: 0 },
+        { name: "Pendentes", value: 0 }
+      ];
+    }
+
+    const completedPct = Math.round((completed / total) * 100);
+    const pendingPct = 100 - completedPct;
+
     return [
-      { name: "Concluídas", value: completed },
-      { name: "Pendentes", value: total - completed }
+      { name: "Concluídas", value: completedPct },
+      { name: "Pendentes", value: pendingPct }
     ];
   }
 
@@ -228,7 +241,167 @@ class StatsService {
     });
   }
 
+  /* ===============================
+     EVOLUÇÃO GERAL
+  =============================== */
 
+  async overallProgress(userId) {
+
+    const now = new Date();
+
+    // Últimos 30 dias
+    const start = new Date();
+    start.setDate(now.getDate() - 30);
+
+    /* ================== POMODOROS ================== */
+
+    const pomodoros = await Pomodoro.aggregate([
+
+      {
+        $match: {
+          userId,
+          completed: true,
+          type: "focus",
+          startedAt: { $gte: start }
+        }
+      },
+
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$startedAt"
+            }
+          },
+          total: { $sum: "$duration" }
+        }
+      }
+
+    ]);
+
+
+    /* ================== TASKS ================== */
+
+    const tasks = await Task.aggregate([
+
+      {
+        $match: {
+          userId,
+          completed: true,
+          updatedAt: { $gte: start }
+        }
+      },
+
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$updatedAt"
+            }
+          },
+          total: { $sum: 1 }
+        }
+      }
+
+    ]);
+
+
+    /* ================== HABITS ================== */
+
+    const habits = await Habit.aggregate([
+
+      {
+        $match: {
+          userId,
+          completedDates: { $exists: true, $ne: [] }
+        }
+      },
+
+      { $unwind: "$completedDates" },
+
+      {
+        $match: {
+          completedDates: { $gte: start }
+        }
+      },
+
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$completedDates"
+            }
+          },
+          total: { $sum: 1 }
+        }
+      }
+
+    ]);
+
+
+    /* ================== MERGE ================== */
+
+    const map = new Map();
+
+
+    // Foco (minutos)
+    pomodoros.forEach(p => {
+
+      map.set(p._id, {
+        date: p._id,
+        pomodoros: Math.round(p.total / 60),
+        tasks: 0,
+        habits: 0
+      });
+
+    });
+
+
+    // Tasks
+    tasks.forEach(t => {
+
+      if (!map.has(t._id)) {
+
+        map.set(t._id, {
+          date: t._id,
+          pomodoros: 0,
+          tasks: 0,
+          habits: 0
+        });
+
+      }
+
+      map.get(t._id).tasks = t.total;
+
+    });
+
+
+    // Habits
+    habits.forEach(h => {
+
+      if (!map.has(h._id)) {
+
+        map.set(h._id, {
+          date: h._id,
+          pomodoros: 0,
+          tasks: 0,
+          habits: 0
+        });
+
+      }
+
+      map.get(h._id).habits = h.total;
+
+    });
+
+
+    // Ordenar por data
+    return Array.from(map.values())
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }
   /* ===============================
       METAS
   =============================== */
@@ -284,55 +457,32 @@ class StatsService {
 
     const [current, previous] = await Promise.all([
 
-      Pomodoro.aggregate([
-        {
-          $match: {
-            userId,
-            type: "focus",
-            completed: true,
-            startedAt: { $gte: lastWeek }
-          }
-        },
-        {
-          $group: {
-            _id: null,
-            total: { $sum: "$duration" }
-          }
-        }
-      ]),
+      // Semana atual
+      Task.countDocuments({
+        userId,
+        completed: true,
+        updatedAt: { $gte: lastWeek }
+      }),
 
-      Pomodoro.aggregate([
-        {
-          $match: {
-            userId,
-            type: "focus",
-            completed: true,
-            startedAt: {
-              $gte: prevWeek,
-              $lt: lastWeek
-            }
-          }
-        },
-        {
-          $group: {
-            _id: null,
-            total: { $sum: "$duration" }
-          }
+      // Semana anterior
+      Task.countDocuments({
+        userId,
+        completed: true,
+        updatedAt: {
+          $gte: prevWeek,
+          $lt: lastWeek
         }
-      ])
+      })
+
     ]);
 
 
-    const currentTotal = current[0]?.total || 0;
-    const previousTotal = previous[0]?.total || 0;
-
-
-    if (previousTotal === 0) {
-      return currentTotal > 0 ? 100 : 0;
+    if (previous === 0) {
+      return current > 0 ? 100 : 0;
     }
 
     return Math.round(
-      ((currentTotal - previousTotal) / previousTotal) * 100
+      ((current - previous) / previous) * 100
     );
   }
 
@@ -494,7 +644,7 @@ class StatsService {
     };
   }
 
-// meio sus essa parte do sistema contar os dias, revisar dps
+  // meio sus essa parte do sistema contar os dias, revisar dps
 
   async consistency(userId) {
 

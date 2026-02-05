@@ -5,7 +5,7 @@ import React, {
   useRef,
   useMemo
 } from "react";
-
+import { FiTrash2 } from "react-icons/fi";
 import ReactFlow, {
   addEdge,
   Background,
@@ -16,10 +16,18 @@ import ReactFlow, {
   applyNodeChanges,
   applyEdgeChanges
 } from "reactflow";
-
-
+  
+import GoalServices from "../../services/goalsService";
+import TasksService from "../../services/tasksService";
+import HabitService from "../../services/habitService";
 import { toPng } from "html-to-image";
 
+import { toast } from "react-toastify";
+import {
+  getCategories,
+  saveCategories
+} from "../../utils/categories";
+import "react-toastify/dist/ReactToastify.css";
 import "reactflow/dist/style.css";
 
 /* ===============================
@@ -27,7 +35,6 @@ import "reactflow/dist/style.css";
 ================================ */
 
 const STORAGE_KEY = "chronomind_map_layout";
-const TITLE_KEY = "chronomind_title";
 const HIDDEN_KEY = "hidden_goals";
 
 /* ===============================
@@ -37,7 +44,9 @@ const HIDDEN_KEY = "hidden_goals";
 export default function MindMapCanvas({
   goals,
   tasks,
-  habits
+  habits,
+  categories,
+  reload
 }) {
 
   const wrapperRef = useRef(null);
@@ -51,10 +60,7 @@ export default function MindMapCanvas({
 
   const [edges, setEdges, onEdgesChange] =
     useEdgesState([]);
-
-  const [centerTitle, setCenterTitle] = useState(
-    localStorage.getItem(TITLE_KEY) || "🧠 ChronoMind"
-  );
+  
 
   const [hiddenGoals, setHiddenGoals] = useState(
     JSON.parse(localStorage.getItem(HIDDEN_KEY) || "[]")
@@ -65,6 +71,9 @@ export default function MindMapCanvas({
 
   const [panelClosed, setPanelClosed] =
     useState(false);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [nodeToDelete, setNodeToDelete] = useState(null);
 
   /* ===============================
      Load Layout
@@ -103,27 +112,33 @@ export default function MindMapCanvas({
   useEffect(() => {
 
     if (!goals.length) return;
-    if (initialized) return;
 
     buildGraph();
 
-    setInitialized(true);
+  }, [goals, tasks, habits, categories]);
 
-  }, [goals, tasks, habits]);
+
 
   function buildGraph() {
+
+    const saved =
+      JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+    const savedNodes = saved.nodes || [];
+
+    function getPos(id, x, y) {
+
+      const found =
+        savedNodes.find(n => n.id === id);
+
+      return found?.position || { x, y };
+    }
 
     const newNodes = [];
     const newEdges = [];
 
     /* Center */
 
-    newNodes.push({
-      id: "center",
-      position: { x: 400, y: 300 },
-      data: { label: centerTitle },
-      style: centerStyle
-    });
 
     /* Goals */
 
@@ -131,22 +146,72 @@ export default function MindMapCanvas({
 
       const id = `goal-${goal._id}`;
 
+      const checkpoints = goal.checkpoints || [];
+
+      const done = checkpoints.filter(c => c.completed).length;
+
+      const total = checkpoints.length || 1;
+
+      const percent = Math.round((done / total) * 100);
+
+
       newNodes.push({
         id,
-        position: {
-          x: 100,
-          y: 100 + index * 160
-        },
+
+        position: getPos(
+          id,
+          100,
+          100 + index * 160
+        ),
+
         data: {
-          label: `🎯 ${goal.title}`,
+          label: `🎯 ${goal.title}\n${done}/${total} • ${percent}%`,
           goalId: goal._id
         },
-        style: goalStyle
+
+        style: {
+          ...goalStyle,
+          boxShadow: `0 0 12px rgba(255,48,48,${percent / 150})`
+        }
       });
 
       newEdges.push({
         id: `e-center-${id}`,
         source: "center",
+        target: id
+      });
+
+    });
+
+    /* Categories */
+
+    categories.forEach((cat, index) => {
+
+      if (!cat.goalId) return;
+
+      const id = `category-${cat.id}`;
+
+      newNodes.push({
+        id,
+
+        position: getPos(
+          id,
+          350,
+          100 + index * 120
+        ),
+
+        data: {
+          label: `${cat.emoji} ${cat.name}`
+        },
+
+        style: {
+          ...categoryStyle
+        }
+      });
+
+      newEdges.push({
+        id: `e-cat-${cat.goalId}-${id}`,
+        source: `goal-${cat.goalId}`,
         target: id
       });
 
@@ -162,14 +227,44 @@ export default function MindMapCanvas({
 
       newNodes.push({
         id,
-        position: {
-          x: 550,
-          y: 100 + index * 130
-        },
+
+        position: getPos(
+          id,
+          550,
+          100 + index * 130
+        ),
+
         data: {
           label: `✅ ${task.title}`
         },
-        style: taskStyle
+
+        style: {
+          ...taskStyle,
+
+          opacity: task.completed ? 0.6 : 1,
+
+          background: task.completed
+            ? "linear-gradient(135deg, #1a1a1a, #101010)" // cinza quando concluído
+            : taskStyle.background, // mantém o original
+
+          border: task.completed
+            ? "1.5px solid rgba(180,180,180,0.4)"
+            : taskStyle.border, // mantém o original
+
+          textDecoration: task.completed
+            ? "line-through"
+            : "none",
+
+          boxShadow: task.completed
+            ? "0 0 12px rgba(180,180,180,0.25)"
+            : taskStyle.boxShadow, // mantém o original
+
+          color: task.completed
+            ? "#9ca3af"
+            : taskStyle.color // mantém o original
+        }
+
+
       });
 
       newEdges.push({
@@ -190,14 +285,42 @@ export default function MindMapCanvas({
 
       newNodes.push({
         id,
-        position: {
-          x: 850,
-          y: 100 + index * 140
-        },
+
+        position: getPos(
+          id,
+          850,
+          100 + index * 140
+        ),
+
         data: {
           label: `${habit.icon} ${habit.name}`
         },
-        style: habitStyle
+
+        style: {
+          ...habitStyle,
+
+          opacity: habit.doneToday ? 0.6 : 1,
+
+          background: habit.doneToday
+            ? "linear-gradient(135deg, #141414, #0d0d0d)"
+            : habitStyle.background,
+
+          border: habit.doneToday
+            ? "1.5px solid rgba(180,180,180,0.4)"
+            : habitStyle.border,
+
+          boxShadow: habit.doneToday
+            ? "0 0 10px rgba(180,180,180,0.2)"
+            : habitStyle.boxShadow,
+
+          color: habit.doneToday
+            ? "#9ca3af"
+            : habitStyle.color,
+
+          textDecoration: habit.doneToday
+            ? "line-through"
+            : "none"
+        }
       });
 
       habit.linkedGoals.forEach(goalId => {
@@ -214,7 +337,10 @@ export default function MindMapCanvas({
 
     setNodes(newNodes);
     setEdges(newEdges);
+
+    setInitialized(true);
   }
+
 
   /* ===============================
      Save Layout
@@ -262,6 +388,18 @@ export default function MindMapCanvas({
         return !hiddenGoals.includes(g);
       }
 
+      if (node.id.startsWith("category-")) {
+
+        const edge =
+          edges.find(e => e.target === node.id);
+
+        if (!edge) return true;
+
+        const g =
+          edge.source.replace("goal-", "");
+
+        return !hiddenGoals.includes(g);
+      }
       if (node.id.startsWith("habit-")) {
 
         const links =
@@ -329,36 +467,89 @@ export default function MindMapCanvas({
     }
   }
 
-  /* ===============================
-     Rename Center
-  ================================ */
+async function handleDeleteNode(node) {
 
-  function onNodeDoubleClick(_, node) {
+  if (!node) return;
 
-    if (node.id !== "center") return;
+  if (node.id === "center") return;
 
-    const name = prompt(
-      "Novo nome:",
-      centerTitle
-    );
+  const id = node.id;
 
-    if (!name?.trim()) return;
+  try {
 
-    setCenterTitle(name);
+    /* ========== META ========== */
+    if (id.startsWith("goal-")) {
 
-    setNodes(nds =>
-      nds.map(n =>
-        n.id === "center"
-          ? {
-            ...n,
-            data: { label: name }
-          }
-          : n
+      const realId = id.replace("goal-", "");
+
+      await GoalServices.remove(realId);
+    }
+
+
+    /* ========== TASK ========== */
+    if (id.startsWith("task-")) {
+
+      const realId = id.replace("task-", "");
+
+      await TasksService.remove(realId);
+    }
+
+
+    /* ========== HABIT ========== */
+    if (id.startsWith("habit-")) {
+
+      const realId = id.replace("habit-", "");
+
+      await HabitService.remove(realId);
+    }
+
+
+/* ========== CATEGORY ========== */
+if (id.startsWith("category-")) {
+
+  const realId = id.replace("category-", "");
+
+  // pega do localStorage
+  const list = getCategories();
+
+  // remove a categoria
+  const filtered = list.filter(cat =>
+    String(cat.id) !== String(realId)
+  );
+
+  // salva de volta
+  saveCategories(filtered);
+
+  toast.success("Categoria removida!");
+
+  reload?.();
+}
+
+
+    /* ========== UI ========== */
+
+    setNodes(n => n.filter(nod => nod.id !== id));
+
+    setEdges(e =>
+      e.filter(ed =>
+        ed.source !== id &&
+        ed.target !== id
       )
     );
 
-    localStorage.setItem(TITLE_KEY, name);
+    setSelectedNode(null);
+
+    toast.success("Item removido!");
+
+  } catch (err) {
+
+    console.error("Erro ao apagar:", err);
+
+    toast.error("Erro ao excluir");
   }
+}
+
+
 
   /* ===============================
      Toggle Goal
@@ -453,6 +644,21 @@ export default function MindMapCanvas({
       {/* Toolbar */}
       <div className="mindmap-toolbar">
 
+        {selectedNode && selectedNode.id !== "center" && (
+
+          <button
+            className="delete-btn"
+            onClick={() => {
+              setNodeToDelete(selectedNode);
+              setIsDeleteOpen(true);
+            }}
+          >
+            <FiTrash2 size={18} />
+            <span>Deletar</span>
+          </button>
+
+        )}
+
         <button
           className="download-btn"
           onClick={handleDownload}
@@ -469,7 +675,6 @@ export default function MindMapCanvas({
       >
 
         <ReactFlow
-
           nodes={filteredNodes}
           edges={filteredEdges}
 
@@ -477,7 +682,15 @@ export default function MindMapCanvas({
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
 
-          onNodeDoubleClick={onNodeDoubleClick}
+          onSelectionChange={({ nodes }) => {
+            setSelectedNode(nodes[0] || null);
+          }}
+
+
+          selectNodesOnDrag={false}
+          nodesDraggable
+          nodesConnectable={false}
+          elementsSelectable
 
           fitView
         >
@@ -490,13 +703,57 @@ export default function MindMapCanvas({
 
       </div>
 
+
+{/* DELETE CONFIRM MODAL */}
+{isDeleteOpen && (
+  <div className="modal">
+
+    <div className="modal-content small">
+
+      <h3>Excluir Item</h3>
+
+      <p>
+        Tem certeza que deseja excluir{" "}
+        <b>{nodeToDelete?.data?.label?.split("\n")[0]}</b>?
+      </p>
+
+      <div className="modal-footer">
+
+        <button
+          className="btn"
+          onClick={() => {
+            setIsDeleteOpen(false);
+            setNodeToDelete(null);
+          }}
+        >
+          Cancelar
+        </button>
+
+        <button
+          className="btn danger"
+          onClick={async () => {
+
+            await handleDeleteNode(nodeToDelete);
+
+            setIsDeleteOpen(false);
+
+            setNodeToDelete(null);
+          }}
+        >
+          Excluir
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+)}
     </div>
   );
 }
 
-/* ===============================
-   Node Styles
-================================ */
+
 
 const base = {
   padding: 12,
@@ -521,6 +778,15 @@ const goalStyle = {
   border: "2px solid #ff3030"
 };
 
+const categoryStyle = {
+  ...base,
+  background: "linear-gradient(135deg, #0c1620, #081018)",
+  border: "2px solid #4fc3f7",
+  boxShadow: "0 0 12px rgba(79,195,247,0.35)",
+  color: "#e0f2ff",
+  fontWeight: "500"
+};
+
 const taskStyle = {
   ...base,
   background: "#0e0e0e",
@@ -532,3 +798,4 @@ const habitStyle = {
   background: "#071a13",
   border: "2px solid #00ff9c"
 };
+

@@ -1,4 +1,6 @@
 import Goal from "../models/Goal.js";
+import Task from "../models/Task.js";
+import Habit from "../models/Habit.js";
 
 
 function calcProgress(checkpoints) {
@@ -52,8 +54,30 @@ export async function updateGoal(userId, goalId, data) {
 
 
 export async function deleteGoal(userId, goalId) {
-  return Goal.findOneAndDelete({ _id: goalId, userId });
+
+  // 1️⃣ Apaga tasks ligadas à meta
+  await Task.deleteMany({
+    userId,
+    goalId
+  });
+
+  // 2️⃣ Remove a meta dos hábitos
+  await Habit.updateMany(
+    { userId, linkedGoals: goalId },
+    {
+      $pull: {
+        linkedGoals: goalId
+      }
+    }
+  );
+
+  // 3️⃣ Apaga a própria meta
+  return Goal.findOneAndDelete({
+    _id: goalId,
+    userId
+  });
 }
+
 
 
 
@@ -77,11 +101,12 @@ export async function addCheckpoint(userId, goalId, checkpoint) {
     return goal;
   }
 
-  goal.checkpoints.push({
-    id: checkpoint.id,
-    title: checkpoint.title,
-    completed: false
-  });
+goal.checkpoints.push({
+  id: checkpoint.id.toString(), 
+  title: checkpoint.title,
+  completed: false
+});
+
 
   // Recalcula progresso
   goal.progress = calcProgress(goal.checkpoints);

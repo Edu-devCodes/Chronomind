@@ -66,7 +66,6 @@
 
   border: none;
   color: white;
-
   padding: 8px 16px;
   border-radius: 10px;
 
@@ -119,6 +118,18 @@
   height: 100%;
 }
 
+/* Melhor leitura dos nós */
+
+.react-flow__node {
+  line-height: 1.4;
+  white-space: pre-line;
+}
+
+.react-flow__node:hover {
+  transform: scale(1.03);
+  transition: 0.2s;
+}
+
 
 /* ===============================
    React Flow UI
@@ -151,10 +162,125 @@
   border-radius: 10px;
 }
 
-.react-flow__node {
-  font-family: Inter, system-ui, sans-serif;
-  font-size: 13px;
+/* ===============================
+   CHRONOMIND NODE UI
+================================ */
+
+.cm-node {
+  background: linear-gradient(
+    160deg,
+    #0d0d0d,
+    #050505
+  );
+
+  border-radius: 16px;
+
+  border: 1px solid #222;
+
+  padding: 12px;
+
+  width: 200px;
+
+  box-shadow:
+    0 0 15px rgba(0,0,0,.6),
+    inset 0 0 10px rgba(255,255,255,.02);
+
+  transition: all .25s ease;
 }
+
+
+/* Conteúdo */
+
+.cm-node-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+
+/* Título */
+
+.cm-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+/* Sub */
+
+.cm-sub {
+  font-size: 11px;
+  opacity: .7;
+}
+
+
+/* Barra */
+
+.cm-progress {
+  width: 100%;
+  height: 6px;
+
+  background: #111;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  margin-top: 4px;
+}
+
+
+.cm-progress-bar {
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    #ff2d2d,
+    orange,
+    #00ff9c
+  );
+
+  border-radius: 10px;
+
+  transition: width .4s ease;
+}
+
+
+/* Porcentagem */
+
+.cm-percent {
+  font-size: 10px;
+  opacity: .6;
+
+  text-align: right;
+}
+
+
+/* Glow por tipo */
+
+.goal-node {
+  border-color: #ff2d2d;
+  box-shadow: 0 0 16px rgba(255,45,45,.4);
+}
+
+.task-node {
+  border-color: orange;
+  box-shadow: 0 0 16px rgba(255,165,0,.4);
+}
+
+.habit-node {
+  border-color: #00ff9c;
+  box-shadow: 0 0 16px rgba(0,255,156,.4);
+}
+
+
+/* Hover */
+
+.cm-node:hover {
+  transform: translateY(-2px) scale(1.02);
+  z-index: 10;
+}
+
 
 
 /* ===============================
@@ -824,6 +950,190 @@ body,
   accent-color: #ff3030;
   cursor: pointer;
 }
+
+
+/* ===============================
+   MODAL AJUDA - COMO FUNCIONA
+================================ */
+
+.mindmap-help-bg {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 99999;
+}
+
+
+/* Card principal */
+.mindmap-help-modal {
+  width: 420px;
+  max-width: 90%;
+
+  background: linear-gradient(
+    160deg,
+    #0d0d0d,
+    #050505
+  );
+
+  border-radius: 20px;
+
+  padding: 26px 24px;
+
+  border: 1px solid rgba(255, 0, 0, 0.4);
+
+  color: white;
+
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.9),
+    0 0 30px rgba(255, 0, 0, 0.2),
+    inset 0 0 15px rgba(255, 255, 255, 0.03);
+
+  animation: helpPop 0.25s ease;
+}
+
+
+/* Animação */
+@keyframes helpPop {
+  from {
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+
+/* Título */
+.mindmap-help-modal h2 {
+  font-size: 20px;
+  font-weight: 600;
+
+  margin-bottom: 10px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+/* Subtexto */
+.mindmap-help-modal p {
+  font-size: 13px;
+  opacity: 0.7;
+
+  margin-bottom: 16px;
+}
+
+
+/* Bloco de explicação */
+.help-section {
+  background: rgba(255, 255, 255, 0.03);
+
+  border: 1px solid #222;
+  border-radius: 14px;
+
+  padding: 14px;
+
+  margin-bottom: 12px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+/* Título do bloco */
+.help-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #ff3030;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+/* Texto */
+.help-section span {
+  font-size: 12px;
+  line-height: 1.5;
+
+  opacity: 0.85;
+}
+
+
+/* Exemplo prático */
+.help-example {
+  background: linear-gradient(
+    160deg,
+    #0a0a0a,
+    #040404
+  );
+
+  border: 1px solid #222;
+  border-radius: 14px;
+
+  padding: 12px;
+
+  margin-top: 8px;
+
+  font-size: 12px;
+
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.02);
+}
+
+
+/* Itens do exemplo */
+.help-example div {
+  margin-bottom: 4px;
+}
+
+
+/* Botão fechar */
+.help-close-btn {
+  margin-top: 14px;
+
+  background: linear-gradient(
+    160deg,
+    #d40000,
+    #ff1c1c
+  );
+
+  border: none;
+  border-radius: 12px;
+
+  padding: 8px 16px;
+
+  color: white;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+
+.help-close-btn:hover {
+  transform: translateY(-1px);
+
+  box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
+}
+
+
 /* ===============================
    MOBILE PATCH DEFINITIVO 
 ================================ */
@@ -988,4 +1298,258 @@ body,
     opacity: 0.7;
   }
 
+}
+
+
+/* =============================
+   MODAL INPUTS
+============================= */
+
+.mindmap-main-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #0f0f0f;
+  border: 1px solid #333;
+  color: white;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.mindmap-main-input:focus {
+  outline: none;
+  border-color: #ff3030;
+  box-shadow: 0 0 8px rgba(255,48,48,0.4);
+}
+
+
+/* =============================
+   CATEGORY
+============================= */
+
+.category-inputs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 12px;
+}
+
+.emoji-input {
+  width: 60px;
+  height: 46px;
+
+  text-align: center;
+  font-size: 22px;
+
+  background: #0f0f0f;
+  border: 1px solid #333;
+  border-radius: 10px;
+
+  color: white;
+}
+
+.emoji-input:focus {
+  outline: none;
+  border-color: #00ff9c;
+  box-shadow: 0 0 8px rgba(0,255,156,0.4);
+}
+
+.emoji-preview {
+  min-width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #071a13;
+  border: 1px solid #00ff9c;
+  border-radius: 10px;
+
+  font-size: 22px;
+}
+
+
+/* =============================
+   SELECTS
+============================= */
+
+.mindmap-category-select,
+.mindmap-goal-select {
+
+  width: 100%;
+  padding: 12px;
+
+  border-radius: 10px;
+
+  background: #0f0f0f;
+  border: 1px solid #333;
+
+  color: white;
+  font-size: 14px;
+
+  margin-bottom: 12px;
+
+  cursor: pointer;
+}
+
+.mindmap-category-select:focus,
+.mindmap-goal-select:focus {
+
+  outline: none;
+
+  border-color: #00ff9c;
+
+  box-shadow: 0 0 8px rgba(0,255,156,0.4);
+}
+
+
+/* =============================
+   TYPE BUTTON CATEGORY
+============================= */
+
+.modal-type-select .category {
+
+
+
+}
+
+.modal-type-select .category.active {
+  border: #00ff9c;
+
+
+  color: #e4e4e4;
+
+  box-shadow: 0 0 12px rgba(0,255,156,0.6);
+}
+
+.mindmap-toolbar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 9999;
+  pointer-events: auto;
+}
+
+
+/* =============================
+   CATEGORY PICKER
+============================= */
+
+.category-picker {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+
+  gap: 8px;
+
+  padding: 6px;
+
+  background: rgba(255,255,255,0.02);
+
+  border: 1px solid #222;
+  border-radius: 12px;
+}
+
+
+/* Botão emoji */
+
+.emoji-btn {
+  height: 42px;
+
+  background: linear-gradient(
+    160deg,
+    #0a0a0a,
+    #050505
+  );
+
+  border: 1px solid #222;
+  border-radius: 10px;
+
+  font-size: 20px;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all .2s ease;
+}
+
+
+/* Hover */
+
+.emoji-btn:hover {
+  background: #111;
+  transform: scale(1.05);
+}
+
+
+/* Selecionado */
+
+.emoji-btn.active {
+  background: #00ff9c;
+  color: #05110d;
+
+  border-color: #00ff9c;
+
+  box-shadow: 0 0 10px rgba(0,255,156,.6);
+}
+
+/* ============================
+   DELETE BUTTON (MATCH DOWNLOAD)
+============================ */
+
+.delete-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 14px;
+
+  background: transparent;
+
+  border: 1px solid #ff3b3b;
+  border-radius: 8px;
+
+  color: white;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+
+/* Hover */
+
+.delete-btn:hover {
+  background: #ff3b3b;
+  color: black;
+
+  box-shadow: 0 0 12px #ff3b3b;
+
+  transform: translateY(-1px);
+}
+
+
+/* Click */
+
+.delete-btn:active {
+  transform: scale(0.95);
+}
+
+
+/* Icon + Text */
+
+.delete-btn span,
+.delete-btn svg {
+  font-size: 15px;
+}
+
+.mindmap-legend .category {
+  color: #4fc3f7; /* azul neon */
 }

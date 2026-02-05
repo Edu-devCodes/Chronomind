@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
-
+import { useNavigate } from "react-router-dom"
 import Sidebar from "./Sidebar/Sidebar"
 import "./dashboard.css"
-
+import Loading from "../../Loading/Loading"
 import Achievements from "./Achievements"
 
 import {
@@ -30,6 +30,8 @@ import {
 
 
 export default function Dashboard({ onNavigate }) {
+
+  const navigate = useNavigate()
 
   const [data, setData] = useState(null)
   const [chart, setChart] = useState([])
@@ -60,47 +62,46 @@ export default function Dashboard({ onNavigate }) {
   }, [])
 
 
-  if (!data) {
-    return <p className="dashboard-loading">Carregando...</p>
+if (!data) {
+  return <Loading text="Carregando dashboard..." />
+}
+
+
+const shortcuts = [
+
+  {
+    id: "tasks",
+    title: "Tarefas",
+    icon: <FaTasks />,
+    count: data.cards.weeklyGrowth + "%",
+    route: "/tasks"
+  },
+
+  {
+    id: "goals",
+    title: "Metas",
+    icon: <FaBullseye />,
+    count: data.cards.completionRate + "%",
+    route: "/goals"
+  },
+
+  {
+    id: "habits",
+    title: "Hábitos",
+    icon: <FaFire />,
+    count: data.cards.activeDays.active,
+    route: "/habits"
+  },
+
+  {
+    id: "charts",
+    title: "Consistência",
+    icon: <FaChartLine />,
+    count: data.cards.consistency + "%",
+    route: "/charts"
   }
 
-
-  const shortcuts = [
-
-    {
-      id: "tasks",
-      title: "Tarefas",
-      description: "Produtividade semanal",
-      icon: <FaTasks />,
-      count: data.cards.weeklyGrowth + "%"
-    },
-
-    {
-      id: "goals",
-      title: "Metas",
-      description: "Taxa de conclusão",
-      icon: <FaBullseye />,
-      count: data.cards.completionRate + "%"
-    },
-
-    {
-      id: "habits",
-      title: "Hábitos",
-      description: "Dias ativos",
-      icon: <FaFire />,
-      count: data.cards.activeDays.active
-    },
-
-    {
-      id: "charts",
-      title: "Consistência",
-      description: "Últimos 30 dias",
-      icon: <FaChartLine />,
-      count: data.cards.consistency + "%"
-    }
-
-  ]
-
+]
 
   return (
 
@@ -132,7 +133,7 @@ export default function Dashboard({ onNavigate }) {
             <div
               key={card.id}
               className="neon-card"
-              onClick={() => onNavigate?.(card.id)}
+              onClick={() => navigate(card.route)}
             >
 
               <div className="card-top">

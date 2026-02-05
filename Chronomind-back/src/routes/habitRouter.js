@@ -14,7 +14,7 @@ router.use(authMiddleware);
 
 router.get("/", listHabits);
 router.post("/", createHabit);
-router.put("/:id", updateHabit);        // 🔥 UPDATE
+router.put("/:id", updateHabit);     
 router.patch("/:id/toggle", toggleHabit);
 router.delete("/:id", deleteHabit);
 

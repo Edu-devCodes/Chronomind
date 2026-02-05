@@ -46,17 +46,19 @@ export default function Goals() {
   const [selectedGoal, setSelectedGoal] = useState(null);
 
   // ---------- LOAD GOALS ----------
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await GoalServices.list();
-        setGoals(res.data);
-      } catch (err) {
-        console.error("Erro ao carregar metas", err);
-      }
-    }
-    load();
-  }, []);
+const loadGoals = async () => {
+  try {
+    const res = await GoalServices.list();
+    setGoals(res.data);
+  } catch (err) {
+    console.error("Erro ao carregar metas", err);
+  }
+};
+
+useEffect(() => {
+  loadGoals();
+}, []);
+
 
   
 
@@ -100,28 +102,27 @@ export default function Goals() {
   };
 
   // ---------- TOGGLE CHECKPOINT ----------
-  const toggleCheckpoint = async (goalId, cpId) => {
-    const updatedGoal = goals.find((g) => g._id === goalId);
-    if (!updatedGoal) return;
+const toggleCheckpoint = async (goalId, cpId) => {
+  try {
+    const goal = goals.find(g => g._id === goalId);
+    if (!goal) return;
 
-    const checkpoints = updatedGoal.checkpoints.map((cp) =>
-      cp.id === cpId ? { ...cp, completed: !cp.completed } : cp
+    const checkpoints = goal.checkpoints.map(cp =>
+      cp.id.toString() === cpId.toString()
+        ? { ...cp, completed: !cp.completed }
+        : cp
     );
 
-    const progress = calculateProgress(checkpoints);
+    await GoalServices.update(goalId, {
+      checkpoints
+    });
 
-    try {
-      const res = await GoalServices.update(goalId, {
-        ...updatedGoal,
-        checkpoints,
-        progress,
-      });
+    await loadGoals(); // 👈 recarrega do backend
 
-      updateGoalLocal(goalId, res.data);
-    } catch (err) {
-      console.error("Erro ao atualizar checkpoint", err);
-    }
-  };
+  } catch (err) {
+    console.error("Erro ao atualizar checkpoint", err);
+  }
+};
 
   // ---------- X CHECKPOINTS ----------
   const addCheckpointField = () => {

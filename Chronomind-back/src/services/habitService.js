@@ -1,4 +1,6 @@
 import Habit from "../models/Habit.js";
+import Goal from "../models/Goal.js";
+
 
 
 /* ===============================
@@ -109,15 +111,38 @@ const HabitService = {
 
 
   /* ===== CRIAR ===== */
-  async create(data) {
+async create(data) {
 
-    const habit = await Habit.create({
-      ...data,
-      completedDates: []
-    });
+  const habit = await Habit.create({
+    ...data,
+    completedDates: []
+  });
 
-    return formatHabit(habit);
-  },
+  /* ===============================
+     CRIA CHECKPOINT NAS METAS
+  ============================== */
+
+  if (data.linkedGoals?.length) {
+
+    for (const goalId of data.linkedGoals) {
+
+      const goal = await Goal.findById(goalId);
+
+      if (!goal) continue;
+
+      goal.checkpoints.push({
+        id: habit._id.toString(),
+        title: habit.name,
+        completed: false
+      });
+
+      await goal.save();
+    }
+  }
+
+  return formatHabit(habit);
+},
+
 
 
   /* ===== UPDATE ===== */
@@ -140,41 +165,91 @@ const HabitService = {
 
 
   /* ===== TOGGLE HOJE ===== */
-  async toggleToday(habitId, userId) {
+async toggleToday(habitId, userId) {
 
-    const habit = await Habit.findOne({
-      _id: habitId,
+  const habit = await Habit.findOne({
+    _id: habitId,
+    userId
+  });
+
+  if (!habit) return null;
+
+  const today = normalizeDate(new Date());
+
+  const index = habit.completedDates.findIndex(d =>
+    sameDay(normalizeDate(d), today)
+  );
+
+  let markedToday = false;
+
+
+  /* ===== REMOVE ===== */
+  if (index >= 0) {
+
+    habit.completedDates.splice(index, 1);
+
+  } 
+  /* ===== ADD ===== */
+  else {
+
+    habit.completedDates.push(today);
+    markedToday = true;
+
+  }
+
+  await habit.save();
+
+
+  /* ===============================
+     ATUALIZA METAS LIGADAS
+  ============================== */
+
+if (habit.linkedGoals?.length) {
+
+  for (const goalId of habit.linkedGoals) {
+
+    const goal = await Goal.findOne({
+      _id: goalId,
       userId
     });
 
-    if (!habit) return null;
+    if (!goal) continue;
 
-
-    const today = normalizeDate(new Date());
-
-
-    const index = habit.completedDates.findIndex(d =>
-      sameDay(normalizeDate(d), today)
+    // procura checkpoint do hábito
+    let checkpoint = goal.checkpoints.find(
+      c => c.id === habit._id.toString()
     );
 
+    // se não existir, cria
+    if (!checkpoint) {
 
-    /* REMOVE */
-    if (index >= 0) {
+      goal.checkpoints.push({
+        id: habit._id.toString(),
+        title: habit.name,
+        completed: markedToday
+      });
 
-      habit.completedDates.splice(index, 1);
+    } else {
 
-    } 
-    /* ADD */
-    else {
+      checkpoint.completed = markedToday;
 
-      habit.completedDates.push(today);
     }
 
+    // recalcula progresso
+    const done =
+      goal.checkpoints.filter(c => c.completed).length;
 
-    await habit.save();
+    goal.progress =
+      (done / goal.checkpoints.length) * 100;
 
-    return formatHabit(habit);
-  },
+    await goal.save();
+  }
+}
+
+
+  return formatHabit(habit);
+},
+
 
 
   /* ===== REMOVER ===== */

@@ -1,7 +1,7 @@
 // src/pages/MindMap/useMindMapData.js
 
 import { useEffect, useState } from "react";
-
+import { cleanUnusedCategories } from "../../utils/categories";
 import GoalServices from "../../services/goalsService";
 import HabitService from "../../services/habitService";
 import TasksService from "../../services/tasksService";
@@ -11,7 +11,7 @@ export default function useMindMapData() {
   const [tasks, setTasks] = useState([]);
   const [habits, setHabits] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  
   async function loadAll() {
     try {
       const [g, t, h] = await Promise.all([
@@ -21,6 +21,7 @@ export default function useMindMapData() {
       ]);
 
       setGoals(g.data);
+      cleanUnusedCategories(g.data);
       setTasks(t.data);
       setHabits(h.data);
       console.log(g.data, t.data, h.data);

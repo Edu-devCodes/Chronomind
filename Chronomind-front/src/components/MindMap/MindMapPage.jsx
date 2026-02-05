@@ -1,18 +1,32 @@
 // src/pages/MindMap/MindMapPage.jsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import Sidebar from "../Dashboard/Sidebar/Sidebar";
-
 import MindMapCanvas from "./MindMapCanvas";
 import useMindMapData from "./useMindMapData";
 
+import {
+  getCategories,
+  saveCategories,
+  addCategory
+} from "../../utils/categories";
+import Loading from "../../Loading/Loading"
 import GoalServices from "../../services/goalsService";
 import TasksService from "../../services/tasksService";
 import HabitService from "../../services/habitService";
 import MindMapLegend from "./MindMapLegend";
 
+import { toast } from "react-toastify";
 import "./mindmap.css";
+
+
+const CATEGORY_EMOJIS = [
+  "📁", "📚", "💼", "🎯", "🧠", "💻", "📊", "📌",
+  "🏃", "💪", "🎓", "📝", "🔥", "🚀", "⭐", "🗂️",
+  "💡", "🎵", "🎮", "📖", "🏆", "⚙️", "🛠️"
+];
 
 export default function MindMapPage() {
 
@@ -24,14 +38,40 @@ export default function MindMapPage() {
     reload
   } = useMindMapData();
 
+  /* ================================
+     States
+  ================================= */
+
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState("goal");
   const [title, setTitle] = useState("");
   const [selectedGoal, setSelectedGoal] = useState("");
 
+  const [showHelp, setShowHelp] = useState(false);
+
+
+  const [categoryName, setCategoryName] = useState("");
+  const [categoryEmoji, setCategoryEmoji] = useState("📁");
+
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+
+  useEffect(() => {
+    const stored = getCategories();
+    setCategories(stored);
+  }, []);
+
+
+
+  /* ================================
+     Loading
+  ================================= */
+
   if (loading) {
-    return <div className="mindmap-loading">Carregando mapa...</div>;
+ return <Loading text="Carregando Mapa Mental..." />
   }
+
 
 
   /* ================================
@@ -42,6 +82,9 @@ export default function MindMapPage() {
     setTitle("");
     setType("goal");
     setSelectedGoal("");
+    setCategoryName("");
+    setCategoryEmoji("📁");
+    setSelectedCategory("");
     setShowModal(false);
   }
 
@@ -52,39 +95,84 @@ export default function MindMapPage() {
 
   async function handleCreate() {
 
-    if (!title.trim()) return;
+    /* ================= CATEGORIA ================= */
+    if (type === "category") {
+
+      if (!categoryName.trim()) {
+        toast.error("Digite o nome da categoria");
+        return;
+      }
+
+      if (!selectedGoal) {
+        toast.error("Selecione uma meta para a categoria");
+        return;
+      }
+
+      const newCat = {
+        id: Date.now().toString(),
+        name: categoryName,
+        emoji: categoryEmoji || "📁",
+        goalId: selectedGoal
+      };
+
+      addCategory(newCat);
+
+      const stored = getCategories();
+      setCategories(stored);
+
+      toast.success("Categoria criada!");
+
+      resetModal(); // ✅ FECHA O MODAL AGORA
+
+      return;
+    }
+
+
+    /* ================= GERAL ================= */
+
+    if (!title.trim()) {
+      toast.error("Digite um nome");
+      return;
+    }
 
     try {
 
-      /* ========= META ========= */
+      /* ================= META ================= */
       if (type === "goal") {
 
         await GoalServices.create({
           title,
           description: "",
-          deadline: new Date()
+          deadline: new Date(),
+          categoryId: selectedCategory || null
         });
 
+        toast.success("Meta criada!");
       }
 
 
-      /* ========= TASK ========= */
+      /* ================= TASK ================= */
       if (type === "task") {
 
         if (!selectedGoal) {
-          alert("Selecione uma meta para a task.");
+          toast.error("Selecione uma meta.");
           return;
         }
 
-        // 1️⃣ Criar task
         const taskRes = await TasksService.create({
           title,
-          goalId: selectedGoal
+          goalId: selectedGoal,
+
+          description: "",
+          priority: "medium",
+          category: "Geral",
+
+          dueDate: new Date().toISOString(), // bug das datas
+          completed: false
         });
 
         const task = taskRes.data;
 
-        // 2️⃣ Criar checkpoint na meta
         await GoalServices.addCheckpoint(
           selectedGoal,
           {
@@ -93,14 +181,15 @@ export default function MindMapPage() {
           }
         );
 
+        toast.success("Task criada!");
       }
 
 
-      /* ========= HÁBITO ========= */
+      /* ================= HÁBITO ================= */
       if (type === "habit") {
 
         if (!selectedGoal) {
-          alert("Selecione uma meta para o hábito.");
+          toast.error("Selecione uma meta.");
           return;
         }
 
@@ -109,6 +198,7 @@ export default function MindMapPage() {
           linkedGoals: [selectedGoal]
         });
 
+        toast.success("Hábito criado!");
       }
 
 
@@ -116,14 +206,20 @@ export default function MindMapPage() {
       reload();
 
     } catch (err) {
+
       console.error("Erro ao criar:", err);
-      alert("Erro ao criar item.");
+
+      toast.error("Erro ao criar item");
     }
   }
 
 
+  /* ================================
+     Render
+  ================================= */
 
   return (
+
     <div className="mindmap-root">
 
       <div className="mindmap-layout">
@@ -133,148 +229,324 @@ export default function MindMapPage() {
         <div className="mindmap-page">
 
 
-          {/* Header */}
+          {/* ================= Header ================= */}
+
           <header className="mindmap-header">
 
             <div>
               <h1>🧠 Mapa Mental</h1>
-              <p>Conecte metas, hábitos e tarefas</p>
+              <p>Conectando metas, tarefas e hábitos</p>
             </div>
 
-            <button
-              className="mindmap-add-btn"
-              onClick={() => setShowModal(true)}
-            >
-              ➕ Adicionar
-            </button>
+            <div className="mindmap-header-actions">
+
+              {/* Botão Ajuda */}
+              <button
+                className="mindmap-help-btn"
+                onClick={() => setShowHelp(true)}
+              >
+                ❔
+              </button>
+
+              {/* Botão Add */}
+              <button
+                className="mindmap-add-btn"
+                onClick={() => setShowModal(true)}
+              >
+                ➕ Adicionar
+              </button>
+
+            </div>
 
           </header>
 
 
+          {/* ================= Canvas ================= */}
+
           <div className="mindmap-wrapper">
+
+            <MindMapLegend />
 
             <MindMapCanvas
               goals={goals}
               tasks={tasks}
               habits={habits}
+              categories={categories}
+              reload={reload}
             />
-
-            <MindMapLegend />
 
           </div>
 
 
+          {/* ================= MODAL CREATE ================= */}
 
-          {/* Modal */}
-          {showModal && (
+          <AnimatePresence>
+            {showModal && (
 
-            <div className="mindmap-modal-bg">
+              <motion.div
+                className="mindmap-modal-bg"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
 
-              <div className="mindmap-modal-advanced">
+                <motion.div
+                  className="mindmap-modal-advanced"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                >
 
-                <h2>Criar Novo</h2>
-                <p>Escolha o tipo e dê um nome</p>
-
-
-                {/* Tipo */}
-
-                <div className="modal-type-select">
-
-                  <button
-                    className={type === "goal" ? "active goal" : "goal"}
-                    onClick={() => setType("goal")}
-                  >
-                    🎯
-                    <span>Meta</span>
-                  </button>
-
-                  <button
-                    className={type === "task" ? "active task" : "task"}
-                    onClick={() => setType("task")}
-                  >
-                    ✅
-                    <span>Task</span>
-                  </button>
-
-                  <button
-                    className={type === "habit" ? "active habit" : "habit"}
-                    onClick={() => setType("habit")}
-                  >
-                    ⚡
-                    <span>Hábito</span>
-                  </button>
-
-                </div>
+                  <h2>Criar Novo</h2>
+                  <p>Escolha o tipo e dê um nome</p>
 
 
-                {/* Input */}
+                  {/* ================= Tipo ================= */}
 
-                <input
-                  placeholder="Digite o nome..."
-                  value={title}
-                  onChange={e => setTitle(e.target.value)}
-                />
+                  <div className="modal-type-select">
+
+                    <button
+                      className={type === "goal" ? "active goal" : "goal"}
+                      onClick={() => setType("goal")}
+                    >
+                      🎯
+                      <span>Meta</span>
+                    </button>
+
+                    <button
+                      className={type === "task" ? "active task" : "task"}
+                      onClick={() => setType("task")}
+                    >
+                      ✅
+                      <span>Task</span>
+                    </button>
+
+                    <button
+                      className={type === "habit" ? "active habit" : "habit"}
+                      onClick={() => setType("habit")}
+                    >
+                      ⚡
+                      <span>Hábito</span>
+                    </button>
+
+                    <button
+                      className={type === "category" ? "active category" : "category"}
+                      onClick={() => setType("category")}
+                    >
+                      🗂️
+                      <span>Categoria</span>
+                    </button>
+
+                  </div>
 
 
-                {/* Select Meta (Task + Hábito) */}
+                  {/* ================= Nome ================= */}
 
-                {(type === "task" || type === "habit") && (
+                  <input
+                    className="mindmap-main-input"
+                    placeholder={
+                      type === "category"
+                        ? "Nome da categoria..."
+                        : "Digite o nome..."
+                    }
+                    value={type === "category" ? categoryName : title}
+                    onChange={e =>
 
-                  <select
-                    className="mindmap-goal-select"
-                    value={selectedGoal}
-                    onChange={e => setSelectedGoal(e.target.value)}
-                  >
+                      type === "category"
+                        ? setCategoryName(e.target.value)
+                        : setTitle(e.target.value)
 
-                    <option value="">
-                      Selecione uma meta
-                    </option>
+                    }
+                  />
 
-                    {goals.map(goal => (
 
-                      <option
-                        key={goal._id}
-                        value={goal._id}
+                  {/* ================= Categoria Inputs ================= */}
+
+                  {type === "category" && (
+
+                    <div className="category-picker">
+
+                      <select
+                        className="mindmap-goal-select"
+                        value={selectedGoal}
+                        onChange={e => setSelectedGoal(e.target.value)}
                       >
-                        {goal.title}
+                        <option value="">
+                          🎯 Vincular a uma meta
+                        </option>
+
+                        {goals.map(goal => (
+                          <option key={goal._id} value={goal._id}>
+                            {goal.title}
+                          </option>
+                        ))}
+                      </select>
+                      {CATEGORY_EMOJIS.map(emoji => (
+
+                        <button
+                          key={emoji}
+                          type="button"
+
+                          className={`emoji-btn ${categoryEmoji === emoji ? "active" : ""
+                            }`}
+
+                          onClick={() => setCategoryEmoji(emoji)}
+                        >
+                          {emoji}
+                        </button>
+
+                      ))}
+
+                    </div>
+
+                  )}
+
+
+
+
+
+                  {/* ================= Select Meta ================= */}
+
+                  {(type === "task" || type === "habit") && (
+
+                    <select
+                      className="mindmap-goal-select"
+                      value={selectedGoal}
+                      onChange={e => setSelectedGoal(e.target.value)}
+                    >
+
+                      <option value="">
+                        🎯 Selecione uma meta
                       </option>
 
-                    ))}
+                      {goals.map(goal => (
 
-                  </select>
+                        <option
+                          key={goal._id}
+                          value={goal._id}
+                        >
+                          {goal.title}
+                        </option>
 
-                )}
+                      ))}
+
+                    </select>
+                  )}
 
 
-                {/* Actions */}
 
-                <div className="modal-actions-advanced">
+                  {/* Actions */}
 
-                  <button
-                    className="cancel"
-                    onClick={resetModal}
-                  >
-                    Cancelar
-                  </button>
+                  <div className="modal-actions-advanced">
+
+                    <button
+                      className="cancel"
+                      onClick={resetModal}
+                    >
+                      Cancelar
+                    </button>
+
+                    <button
+                      className="confirm"
+                      onClick={handleCreate}
+                    >
+                      Criar
+                    </button>
+
+                  </div>
+
+                </motion.div>
+
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+
+
+          {/* ================= MODAL HELP ================= */}
+
+          <AnimatePresence>
+            {showHelp && (
+
+              <motion.div
+                className="mindmap-modal-bg"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+
+                <motion.div
+                  className="mindmap-help-modal"
+                  initial={{ y: 40, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 40, opacity: 0 }}
+                >
+
+                  <h2>📌 Como funciona o sistema?</h2>
+
+                  <p>
+                    O ChronoMind conecta tudo em forma de mapa:
+                  </p>
+
+                  <ul>
+                    <li>🎯 <b>Meta</b> = Objetivo principal</li>
+                    <li>✅ <b>Task</b> = Etapa da meta</li>
+                    <li>⚡ <b>Hábito</b> = Ação recorrente</li>
+                  </ul>
+
+
+                  <div className="mindmap-help-example">
+
+                    <h4>💡 Exemplo prático</h4>
+
+                    <p>
+                      Meta: <b>"Passar no ENEM"</b>
+                    </p>
+
+                    <p>
+                      Tasks:
+                      <br />
+                      → Estudar Matemática
+                      <br />
+                      → Fazer simulados
+                    </p>
+
+                    <p>
+                      Hábito:
+                      <br />
+                      → Estudar 1h por dia
+                    </p>
+
+                    <p>
+                      Tudo isso aparece conectado no mapa.
+                    </p>
+
+                  </div>
+
+
+                  <p className="mindmap-help-footer">
+                    O sistema usa essas relações para gerar
+                    análises, progresso e organização automática.
+                  </p>
+
 
                   <button
                     className="confirm"
-                    onClick={handleCreate}
+                    onClick={() => setShowHelp(false)}
                   >
-                    Criar
+                    Entendi
                   </button>
 
-                </div>
+                </motion.div>
 
-              </div>
-
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
 
         </div>
 
       </div>
-    </div>
+    </div >
   );
 }

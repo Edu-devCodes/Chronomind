@@ -14,6 +14,7 @@ import {
   FiEdit2,
   FiTrash2,
 } from "react-icons/fi";
+import Loading from "../../Loading/Loading"
 import Swal from "sweetalert2";
 import Sidebar from "../Dashboard/Sidebar/Sidebar";
 import TasksService from "../../services/tasksService";
@@ -21,6 +22,7 @@ import "./tasks.css";
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true)
   const [mode, setMode] = useState("list");
   const [index, setIndex] = useState(0);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -37,13 +39,26 @@ export default function TasksPage() {
   /* ===============================
      API - GET
   ================================ */
-  useEffect(() => {
-    const loadTasks = async () => {
-      const { data } = await TasksService.getAll();
-      setTasks(data);
-    };
-    loadTasks();
-  }, []);
+useEffect(() => {
+
+  const loadTasks = async () => {
+    try {
+      setLoading(true)
+
+      const { data } = await TasksService.getAll()
+      setTasks(data)
+
+    } catch (err) {
+      console.error("Erro ao carregar tasks:", err)
+
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  loadTasks()
+
+}, [])
 
   /* ===============================
      FILTERS
@@ -156,15 +171,13 @@ export default function TasksPage() {
     setTasks(tasks.map(t => (t._id === data._id ? data : t)));
   };
 
-  const completeTask = async () => {
-    const { data } = await TasksService.update(task._id, {
-      ...task,
-      completed: true,
-    });
+const completeTask = async () => {
+  const { data } = await TasksService.complete(task._id);
 
-    setTasks(tasks.map(t => (t._id === data._id ? data : t)));
-    setIndex(0);
-  };
+  setTasks(tasks.map(t => (t._id === data._id ? data : t)));
+  setIndex(0);
+};
+
 
   /* ===============================
      MOTION
@@ -211,8 +224,11 @@ export default function TasksPage() {
 const randomMessage =
   emptyMessages[Math.floor(Math.random() * emptyMessages.length)];
 
-
+if (loading) {
+  return <Loading text="Carregando tarefas..." />
+}
   return (
+    
     <div className="layout">
       <Sidebar />
 
