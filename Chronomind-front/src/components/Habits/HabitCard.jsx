@@ -14,15 +14,18 @@ export default function HabitCard({ habit, onToggle, onEdit, onDelete }) {
   const color = habit.color || "#00ff88";
   const week = Array.isArray(habit.week) ? habit.week : [];
 
-  const handleToggle = async () => {
-    if (!onToggle) return;
+const handleToggle = () => {
+  if (!onToggle) return;
 
-    const updated = await onToggle(habit._id);
+  const wasDone = habit.doneToday;
 
-    if (!habit.doneToday && updated?.doneToday) {
-      setConfettiKey(k => k + 1);
-    }
-  };
+  onToggle(habit._id);
+
+  // Confetti instantâneo
+  if (!wasDone) {
+    setConfettiKey(k => k + 1);
+  }
+};
 
   const handleDelete = () => {
     onDelete(habit._id);

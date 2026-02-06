@@ -431,52 +431,27 @@
 }
 
 /* Input */
-.video-input-wrapper input {
-  flex: 1;
+.yt-placeholder placeholder {
+  flex: 1 1 0%;      
+  min-width: 0;      
 
-  background: transparent;
-  border: none;
-  outline: none;
-
-  color: #fff;
-  font-size: 15px;
-}
-
-.video-input-wrapper input::placeholder {
-  color: rgba(255, 255, 255, 0.45);
-}
-
-/* Botão */
-.video-generate-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
 
-  padding: 8px 14px;
+  padding: 12px 14px;
 
   border-radius: 10px;
 
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 
-  background: linear-gradient(135deg, #8a080e, #ff0303);
-
-  color: white;
-  font-weight: 600;
+  background: rgba(0, 0, 0, 0.4);
 
   cursor: pointer;
 
-  transition: all 0.2s ease;
+  overflow: hidden;  
 }
 
-.video-generate-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  opacity: 0.9;
-}
 
-.video-generate-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
 
 /* ===============================
    PDF PADRÃO YOUTUBE
@@ -495,11 +470,15 @@
   background: rgba(255, 255, 255, 0.04);
 
   border: 1px solid rgba(255, 255, 255, 0.08);
+
+  width: 100%;        
+  overflow: hidden;    
 }
 
 /* Input fake */
 .pdf-input {
-  flex: 1;
+  flex: 1 1 0%;      
+  min-width: 0;      
 
   display: flex;
   align-items: center;
@@ -514,7 +493,7 @@
 
   cursor: pointer;
 
-  transition: border 0.2s ease;
+  overflow: hidden;  
 }
 
 .pdf-input:hover {
@@ -530,13 +509,17 @@
 
 /* Arquivo selecionado */
 .pdf-selected {
-  font-size: 14px;
+  flex: 1;
+  min-width: 0;
 
+  font-size: 14px;
   color: #fff;
 
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+
+  display: block;
 }
 
 /* Botão remover */
@@ -586,4 +569,63 @@
 .summary-text p {
   color: #e0e0e0;
   font-size: 0.95rem;
+}
+
+/* ===============================
+   RESPONSIVO GRID
+================================ */
+
+@media (max-width: 768px) {
+  .studies-grid {
+    grid-template-columns: 1fr; 
+    gap: 20px;
+    padding: 0 14px; 
+  }
+}
+
+@media (max-width: 480px) {
+  .studies-grid {
+    padding: 0 10px;
+  }
+}
+
+.generate-btn {
+  min-width: 90px;
+  justify-content: center;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 10px 14px;
+  border-radius: 10px;
+
+  border: none;
+
+  background: linear-gradient(135deg, #8a080e, #ff0303);
+
+  color: white;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+/* INPUT YOUTUBE IGUAL PDF */
+
+.pdf-input input {
+  flex: 1;
+  min-width: 0;
+
+  background: transparent;
+  border: none;
+  outline: none;
+
+  color: #fff;
+  font-size: 14px;
+}
+
+.pdf-input input::placeholder {
+  color: rgba(255,255,255,0.5);
 }

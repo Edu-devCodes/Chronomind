@@ -539,7 +539,10 @@ if (id.startsWith("category-")) {
 
     setSelectedNode(null);
 
-    toast.success("Item removido!");
+    toast.success("Item removido com sucesso 🗑️", {
+  theme: "dark",
+  autoClose: 2200,
+});
 
   } catch (err) {
 

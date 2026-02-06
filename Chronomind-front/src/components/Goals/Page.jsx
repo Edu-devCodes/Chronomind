@@ -3,8 +3,36 @@ import GoalServices from "../../services/goalsService";
 import Sidebar from "../Dashboard/Sidebar/Sidebar";
 import "./goals.css";
 import { FiPlus } from "react-icons/fi";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import Loading from "../../Loading/Loading";
 
 
+
+const showSuccess = (msg) => {
+  toast.success(msg, {
+    position: "top-right",
+    autoClose: 2200,
+    theme: "dark",
+  });
+};
+
+const showError = (msg) => {
+  toast.error(msg, {
+    position: "top-right",
+    autoClose: 2200,
+    theme: "dark",
+  });
+};
+
+const showWarning = (msg) => {
+  toast.warning(msg, {
+    position: "top-right",
+    autoClose: 2200,
+    theme: "dark",
+  });
+};
 
 const emptyGoalMessages = [
   {
@@ -44,23 +72,32 @@ export default function Goals() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState(null);
+  const [loadingPage, setLoadingPage] = useState(true);
+  const [loadingAction, setLoadingAction] = useState(false);
 
   // ---------- LOAD GOALS ----------
-const loadGoals = async () => {
-  try {
-    const res = await GoalServices.list();
-    setGoals(res.data);
-  } catch (err) {
-    console.error("Erro ao carregar metas", err);
-  }
-};
+  const loadGoals = async () => {
+    try {
+      setLoadingPage(true);
 
-useEffect(() => {
-  loadGoals();
-}, []);
+      const res = await GoalServices.list();
+      setGoals(res.data);
+
+    } catch (err) {
+      console.error("Erro ao carregar metas", err);
+      showError("Erro ao carregar metas");
+
+    } finally {
+      setLoadingPage(false);
+    }
+  };
+
+  useEffect(() => {
+    loadGoals();
+  }, []);
 
 
-  
+
 
   // ---------- FORM STATE ----------
   const [formData, setFormData] = useState({
@@ -102,27 +139,65 @@ useEffect(() => {
   };
 
   // ---------- TOGGLE CHECKPOINT ----------
-const toggleCheckpoint = async (goalId, cpId) => {
-  try {
-    const goal = goals.find(g => g._id === goalId);
-    if (!goal) return;
+  // ---------- TOGGLE CHECKPOINT ----------
+  const toggleCheckpoint = async (goalId, cpId) => {
 
-    const checkpoints = goal.checkpoints.map(cp =>
-      cp.id.toString() === cpId.toString()
-        ? { ...cp, completed: !cp.completed }
-        : cp
+    // 1️⃣ Atualiza na tela primeiro (instantâneo)
+    setGoals((prevGoals) =>
+      prevGoals.map((goal) => {
+
+        if (goal._id !== goalId) return goal;
+
+        return {
+          ...goal,
+          checkpoints: goal.checkpoints.map((cp) =>
+            cp.id.toString() === cpId.toString()
+              ? { ...cp, completed: !cp.completed }
+              : cp
+          ),
+        };
+      })
     );
 
-    await GoalServices.update(goalId, {
-      checkpoints
-    });
+    // 2️⃣ Salva no backend em background
+    try {
 
-    await loadGoals(); // 👈 recarrega do backend
+      const goal = goals.find((g) => g._id === goalId);
+      if (!goal) return;
 
-  } catch (err) {
-    console.error("Erro ao atualizar checkpoint", err);
-  }
-};
+      const updatedCheckpoints = goal.checkpoints.map((cp) =>
+        cp.id.toString() === cpId.toString()
+          ? { ...cp, completed: !cp.completed }
+          : cp
+      );
+
+      await GoalServices.update(goalId, {
+        checkpoints: updatedCheckpoints,
+      });
+
+    } catch (err) {
+
+      console.error("Erro ao atualizar checkpoint", err);
+      showError("Erro ao salvar checkpoint");
+
+      // 3️⃣ Reverte se der erro (rollback)
+      setGoals((prevGoals) =>
+        prevGoals.map((goal) => {
+
+          if (goal._id !== goalId) return goal;
+
+          return {
+            ...goal,
+            checkpoints: goal.checkpoints.map((cp) =>
+              cp.id.toString() === cpId.toString()
+                ? { ...cp, completed: !cp.completed }
+                : cp
+            ),
+          };
+        })
+      );
+    }
+  };
 
   // ---------- X CHECKPOINTS ----------
   const addCheckpointField = () => {
@@ -154,10 +229,25 @@ const toggleCheckpoint = async (goalId, cpId) => {
 
   // ---------- CREATE ----------
   const handleCreate = async () => {
-    if (!formData.title.trim()) return;
+
+    if (!formData.title.trim()) {
+      showError("Digite o título da meta");
+      return;
+    }
+
+    if (formData.title.trim().length < 3) {
+      showWarning("O título precisa ter pelo menos 3 letras");
+      return;
+    }
 
     const valid = formData.checkpoints.filter((c) => c.title.trim());
-    if (valid.length === 0) return;
+
+    if (valid.length === 0) {
+      showError("Adicione pelo menos um checkpoint");
+      return;
+    }
+
+    setLoadingAction(true);
 
     const progress = calculateProgress(valid);
 
@@ -168,12 +258,23 @@ const toggleCheckpoint = async (goalId, cpId) => {
     };
 
     try {
+
       const res = await GoalServices.create(payload);
+
       addGoal(res.data);
+
+      showSuccess("Meta criada com sucesso 🎯");
+
       resetForm();
       setIsCreateOpen(false);
+
     } catch (error) {
+
       console.error("Erro ao criar meta", error);
+      showError("Erro ao criar meta");
+
+    } finally {
+      setLoadingAction(false);
     }
   };
 
@@ -190,24 +291,50 @@ const toggleCheckpoint = async (goalId, cpId) => {
   };
 
   const handleEdit = async () => {
+
+    if (!formData.title.trim()) {
+      showError("Digite o título da meta");
+      return;
+    }
+
+    if (formData.title.trim().length < 3) {
+      showWarning("Título muito curto");
+      return;
+    }
+
+    setLoadingAction(true);
+
     const progress = calculateProgress(formData.checkpoints);
 
     try {
+
       const res = await GoalServices.update(selectedGoal._id, {
         ...formData,
         progress,
       });
 
       updateGoalLocal(selectedGoal._id, res.data);
+
+      showSuccess("Meta atualizada ✨");
+
       setIsEditOpen(false);
+
     } catch (err) {
+
       console.error("Erro ao editar meta", err);
+      showError("Erro ao editar meta");
+
+    } finally {
+      setLoadingAction(false);
     }
   };
 
   // ---------- COUNTS ----------
   const completedGoals = goals.filter((g) => g.progress >= 100).length;
 
+  if (loadingPage) {
+    return <Loading text="Carregando metas..." />;
+  }
   return (
     <div className="goals-layout">
       <Sidebar />
@@ -259,80 +386,80 @@ const toggleCheckpoint = async (goalId, cpId) => {
         </div>
 
         {/* GOALS GRID */}
-<div className="goals-grid">
-  {goals.length > 0 ? (
-    goals.map((goal) => {
-      const completed = goal.checkpoints.filter(c => c.completed).length;
-      const total = goal.checkpoints.length;
-      const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+        <div className="goals-grid">
+          {goals.length > 0 ? (
+            goals.map((goal) => {
+              const completed = goal.checkpoints.filter(c => c.completed).length;
+              const total = goal.checkpoints.length;
+              const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-      return (
-        <div
-          key={goal._id}
-          className={`goal-card ${progress >= 100 ? "goal-complete" : ""}`}
-          style={{ "--progress": `${progress}%` }}  // 🔴 controla a barra do topo
-        >
-          <div className="goal-header">
-            <h2>{goal.title}</h2>
+              return (
+                <div
+                  key={goal._id}
+                  className={`goal-card ${progress >= 100 ? "goal-complete" : ""}`}
+                  style={{ "--progress": `${progress}%` }}  // 🔴 controla a barra do topo
+                >
+                  <div className="goal-header">
+                    <h2>{goal.title}</h2>
 
-            <div className="goal-actions">
-              <button
-                onClick={() => openEditModal(goal)}
-                className="btn small"
-              >
-                Editar
-              </button>
+                    <div className="goal-actions">
+                      <button
+                        onClick={() => openEditModal(goal)}
+                        className="btn small"
+                      >
+                        Editar
+                      </button>
 
-              <button
-                className="btn small danger"
-                onClick={() => {
-                  setSelectedGoal(goal);
-                  setIsDeleteOpen(true);
-                }}
-              >
-                Excluir
-              </button>
-            </div>
-          </div>
+                      <button
+                        className="btn small danger"
+                        onClick={() => {
+                          setSelectedGoal(goal);
+                          setIsDeleteOpen(true);
+                        }}
+                      >
+                        Excluir
+                      </button>
+                    </div>
+                  </div>
 
-          <p className="goal-desc">{goal.description}</p>
+                  <p className="goal-desc">{goal.description}</p>
 
-          {/* TEXTO DE PROGRESSO (SEM BARRA VISUAL) */}
-          <div className="progress-text">
-            {completed}/{total} checkpoints
-          </div>
+                  {/* TEXTO DE PROGRESSO (SEM BARRA VISUAL) */}
+                  <div className="progress-text">
+                    {completed}/{total} checkpoints
+                  </div>
 
-          <p className="deadline">
-            Prazo: {new Date(goal.deadline).toLocaleDateString("pt-BR")}
-          </p>
+                  <p className="deadline">
+                    Prazo: {new Date(goal.deadline).toLocaleDateString("pt-BR")}
+                  </p>
 
-          <div className="cp-list">
-            {goal.checkpoints.map((cp) => (
-              <div
-                key={cp.id}
-                className={`cp-item ${cp.completed ? "cp-done" : ""}`}
-                onClick={() => toggleCheckpoint(goal._id, cp.id)}
-              >
-                <input type="checkbox" checked={cp.completed} readOnly />
-                <span>{cp.title}</span>
-              </div>
-            ))}
-          </div>
+                  <div className="cp-list">
+                    {goal.checkpoints.map((cp) => (
+                      <div
+                        key={cp.id}
+                        className={`cp-item ${cp.completed ? "cp-done" : ""}`}
+                        onClick={() => toggleCheckpoint(goal._id, cp.id)}
+                      >
+                        <input type="checkbox" checked={cp.completed} readOnly />
+                        <span>{cp.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            (() => {
+              const msg = getRandomEmptyGoalMessage();
+              return (
+                <div className="empty-goals-message">
+                  <h3>{msg.title}</h3>
+                  <p>{msg.text}</p>
+                </div>
+              );
+            })()
+          )}
         </div>
-      );
-    })
-  ) : (
-    (() => {
-      const msg = getRandomEmptyGoalMessage();
-      return (
-        <div className="empty-goals-message">
-          <h3>{msg.title}</h3>
-          <p>{msg.text}</p>
-        </div>
-      );
-    })()
-  )}
-</div>
 
 
         {/* ------- MODAIS ------- */}
@@ -490,8 +617,21 @@ const toggleCheckpoint = async (goalId, cpId) => {
                 <button
                   className="btn danger"
                   onClick={async () => {
-                    await GoalServices.remove(selectedGoal._id);
-                    deleteGoal(selectedGoal._id);
+                    try {
+
+                      await GoalServices.remove(selectedGoal._id);
+
+                      deleteGoal(selectedGoal._id);
+
+                      showSuccess("Meta excluída com sucesso 🗑️");
+
+                    } catch (err) {
+
+                      console.error("Erro ao excluir meta", err);
+
+                      showError("Erro ao excluir meta");
+
+                    }
                   }}
                 >
                   Excluir
@@ -502,15 +642,15 @@ const toggleCheckpoint = async (goalId, cpId) => {
         )}
       </div>
       {/* BOTÃO MOBILE */}
-<button
-  className="mobile-add-btn"
-  onClick={() => {
-    resetForm();
-    setIsCreateOpen(true);
-  }}
->
-  <FiPlus />
-</button>
+      <button
+        className="mobile-add-btn"
+        onClick={() => {
+          resetForm();
+          setIsCreateOpen(true);
+        }}
+      >
+        <FiPlus />
+      </button>
 
     </div>
   );

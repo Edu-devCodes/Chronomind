@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import Sidebar from "../Dashboard/Sidebar/Sidebar";
 import MindMapCanvas from "./MindMapCanvas";
 import useMindMapData from "./useMindMapData";
-
 import {
   getCategories,
   saveCategories,
@@ -18,10 +17,25 @@ import TasksService from "../../services/tasksService";
 import HabitService from "../../services/habitService";
 import MindMapLegend from "./MindMapLegend";
 
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./mindmap.css";
 
+const showSuccess = (msg) => {
+  toast.success(msg, {
+    position: "top-right",
+    autoClose: 2200,
+    theme: "dark",
+  });
+};
 
+const showError = (msg) => {
+  toast.error(msg, {
+    position: "top-right",
+    autoClose: 2200,
+    theme: "dark",
+  });
+};
 const CATEGORY_EMOJIS = [
   "📁", "📚", "💼", "🎯", "🧠", "💻", "📊", "📌",
   "🏃", "💪", "🎓", "📝", "🔥", "🚀", "⭐", "🗂️",
@@ -93,125 +107,124 @@ export default function MindMapPage() {
      Criar Item
   ================================= */
 
-  async function handleCreate() {
+async function handleCreate() {
 
-    /* ================= CATEGORIA ================= */
-    if (type === "category") {
+  /* ================= CATEGORIA ================= */
+  if (type === "category") {
 
-      if (!categoryName.trim()) {
-        toast.error("Digite o nome da categoria");
-        return;
-      }
+    if (!categoryName.trim()) {
+      showError("Digite o nome da categoria");
+      return;
+    }
+
+    if (!selectedGoal) {
+      showError("Selecione uma meta para a categoria");
+      return;
+    }
+
+    const newCat = {
+      id: Date.now().toString(),
+      name: categoryName.trim(),
+      emoji: categoryEmoji || "📁",
+      goalId: selectedGoal
+    };
+
+    addCategory(newCat);
+
+    const stored = getCategories();
+    setCategories(stored);
+
+    showSuccess("Categoria criada com sucesso 🗂️");
+
+    resetModal();
+    return;
+  }
+
+
+  /* ================= GERAL ================= */
+
+  if (!title.trim()) {
+    showError("Digite um nome");
+    return;
+  }
+
+  try {
+
+    /* ================= META ================= */
+    if (type === "goal") {
+
+      await GoalServices.create({
+        title: title.trim(),
+        description: "",
+        deadline: new Date(),
+        categoryId: selectedCategory || null
+      });
+
+      showSuccess("Meta criada com sucesso 🎯");
+    }
+
+
+    /* ================= TASK ================= */
+    if (type === "task") {
 
       if (!selectedGoal) {
-        toast.error("Selecione uma meta para a categoria");
+        showError("Selecione uma meta.");
         return;
       }
 
-      const newCat = {
-        id: Date.now().toString(),
-        name: categoryName,
-        emoji: categoryEmoji || "📁",
-        goalId: selectedGoal
-      };
+      const taskRes = await TasksService.create({
+        title: title.trim(),
+        goalId: selectedGoal,
 
-      addCategory(newCat);
+        description: "",
+        priority: "medium",
+        category: "Geral",
 
-      const stored = getCategories();
-      setCategories(stored);
+        dueDate: new Date().toISOString(),
+        completed: false
+      });
 
-      toast.success("Categoria criada!");
+      const task = taskRes.data;
 
-      resetModal(); // ✅ FECHA O MODAL AGORA
-
-      return;
-    }
-
-
-    /* ================= GERAL ================= */
-
-    if (!title.trim()) {
-      toast.error("Digite um nome");
-      return;
-    }
-
-    try {
-
-      /* ================= META ================= */
-      if (type === "goal") {
-
-        await GoalServices.create({
-          title,
-          description: "",
-          deadline: new Date(),
-          categoryId: selectedCategory || null
-        });
-
-        toast.success("Meta criada!");
-      }
-
-
-      /* ================= TASK ================= */
-      if (type === "task") {
-
-        if (!selectedGoal) {
-          toast.error("Selecione uma meta.");
-          return;
+      await GoalServices.addCheckpoint(
+        selectedGoal,
+        {
+          checkpointId: task._id,
+          title: task.title
         }
+      );
 
-        const taskRes = await TasksService.create({
-          title,
-          goalId: selectedGoal,
-
-          description: "",
-          priority: "medium",
-          category: "Geral",
-
-          dueDate: new Date().toISOString(), // bug das datas
-          completed: false
-        });
-
-        const task = taskRes.data;
-
-        await GoalServices.addCheckpoint(
-          selectedGoal,
-          {
-            checkpointId: task._id,
-            title: task.title
-          }
-        );
-
-        toast.success("Task criada!");
-      }
-
-
-      /* ================= HÁBITO ================= */
-      if (type === "habit") {
-
-        if (!selectedGoal) {
-          toast.error("Selecione uma meta.");
-          return;
-        }
-
-        await HabitService.create({
-          name: title,
-          linkedGoals: [selectedGoal]
-        });
-
-        toast.success("Hábito criado!");
-      }
-
-
-      resetModal();
-      reload();
-
-    } catch (err) {
-
-      console.error("Erro ao criar:", err);
-
-      toast.error("Erro ao criar item");
+      showSuccess("Tarefa criada com sucesso ✅");
     }
+
+
+    /* ================= HÁBITO ================= */
+    if (type === "habit") {
+
+      if (!selectedGoal) {
+        showError("Selecione uma meta.");
+        return;
+      }
+
+      await HabitService.create({
+        name: title.trim(),
+        linkedGoals: [selectedGoal]
+      });
+
+      showSuccess("Hábito criado com sucesso ⚡");
+    }
+
+
+    resetModal();
+    reload();
+
+  } catch (err) {
+
+    console.error("Erro ao criar:", err);
+
+    showError("Erro ao criar item");
   }
+}
 
 
   /* ================================
@@ -547,6 +560,7 @@ export default function MindMapPage() {
         </div>
 
       </div>
+      <ToastContainer />
     </div >
   );
 }

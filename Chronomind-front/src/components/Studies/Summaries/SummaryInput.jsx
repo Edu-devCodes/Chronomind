@@ -160,6 +160,13 @@ export default function SummaryInput({
       </p>
     ));
   }
+
+  function truncate(text, max = 35) {
+    if (!text) return "";
+    return text.length > max
+      ? text.slice(0, max) + "..."
+      : text;
+  }
   /* ===============================
      RENDER
   =============================== */
@@ -245,10 +252,11 @@ export default function SummaryInput({
             )}
 
             {file && (
-              <span className="pdf-selected">
-                📄 {file.name}
+              <span className="pdf-selected" title={file.name}>
+                📄 {truncate(file.name, 15)}
               </span>
             )}
+
 
           </label>
 
@@ -285,27 +293,46 @@ export default function SummaryInput({
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="video-input-wrapper">
 
-            <FiYoutube className="yt-icon" />
+          <div className="pdf-box"> {/* reaproveita layout */}
 
-            <input
-              type="text"
-              placeholder="Cole o link do YouTube aqui..."
-              value={videoUrl}
-              onChange={e => setVideoUrl(e.target.value)}
-            />
+            {/* INPUT */}
+            <div className="pdf-input">
 
+              <FiYoutube className="yt-icon" />
+
+              <input
+                type="text"
+                placeholder="Cole o link do YouTube aqui..."
+                value={videoUrl}
+                onChange={e => setVideoUrl(e.target.value)}
+              />
+
+            </div>
+
+            {/* LIMPAR */}
+            {videoUrl && (
+              <button
+                className="pdf-remove-btn"
+                onClick={() => setVideoUrl("")}
+                title="Limpar"
+              >
+                <FiX size={16} />
+              </button>
+            )}
+
+            {/* GERAR */}
             <button
-              className="video-generate-btn"
+              className="generate-btn"
               onClick={handleGenerateVideo}
-              disabled={loading}
+              disabled={loading || !videoUrl}
             >
               <FiSend size={18} />
               Gerar
             </button>
 
           </div>
+
         </motion.div>
       )}
 

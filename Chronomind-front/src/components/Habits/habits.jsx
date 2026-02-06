@@ -59,31 +59,59 @@ const getRandomEmptyMessage = () => {
 };
 
 
-  // UPDATE ✅ TOAST
-  const updateHabit = async (id, data) => {
-    const res = await HabitService.update(id, data);
+// UPDATE
+const updateHabit = async (id, data) => {
+  const res = await HabitService.update(id, data);
 
-    setHabits(prev =>
-      prev.map(h => (h._id === id ? res.data : h))
-    );
-
-    toast.success("Hábito atualizado com sucesso ✨", {
-      position: "top-right",
-      autoClose: 2500,
-      theme: "dark",
-    });
-  };
+  setHabits(prev =>
+    prev.map(h => (h._id === id ? res.data : h))
+  );
+};
 
   // TOGGLE
-  const toggleDone = async (id) => {
-    const res = await HabitService.toggleToday(id);
+const toggleDone = async (id) => {
 
-    setHabits(prev =>
-      prev.map(h => (h._id === id ? res.data : h))
+  // 1️⃣ Atualiza na tela na hora
+  setHabits((prev) =>
+    prev.map((h) =>
+      h._id === id
+        ? {
+            ...h,
+            doneToday: !h.doneToday,
+            streak: h.doneToday ? h.streak - 1 : h.streak + 1,
+          }
+        : h
+    )
+  );
+
+  // 2️⃣ Salva no backend em background
+  try {
+
+    await HabitService.toggleToday(id);
+
+  } catch (err) {
+
+    console.error("Erro ao marcar hábito", err);
+
+    toast.error("Erro ao salvar hábito ❌", {
+      theme: "dark",
+      autoClose: 2000,
+    });
+
+    // 3️⃣ Reverte se der erro
+    setHabits((prev) =>
+      prev.map((h) =>
+        h._id === id
+          ? {
+              ...h,
+              doneToday: !h.doneToday,
+              streak: h.doneToday ? h.streak - 1 : h.streak + 1,
+            }
+          : h
+      )
     );
-
-    return res.data;
-  };
+  }
+};
 
   
   // DELETE ✅ TOAST
@@ -189,6 +217,7 @@ const getRandomEmptyMessage = () => {
 
       {openModal && (
         <HabitModal
+          habits={habits}
           habit={editingHabit}
           onClose={() => {
             setOpenModal(false);

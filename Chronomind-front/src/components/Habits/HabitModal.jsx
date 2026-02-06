@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./habits.css";
+import { toast } from "react-toastify";
+const EMOJIS = ["💪", "📚", "🧘", "🏃", "💧", "🎨", "🎵", "🥗", "😴"];
 
-const EMOJIS = ["💪","📚","🧘","🏃","💧","🎨","🎵","🥗","😴"];
-
-export default function HabitModal({ onClose, onCreate, onUpdate, habit }) {
+export default function HabitModal({ onClose, onCreate, onUpdate, habit, habits }) {
   const isEdit = !!habit;
 
   const [name, setName] = useState("");
@@ -26,15 +26,59 @@ export default function HabitModal({ onClose, onCreate, onUpdate, habit }) {
     return () => (document.body.style.overflow = "auto");
   }, []);
 
-  const handleSubmit = () => {
-    if (!name.trim()) return;
 
-    const data = { name, icon, color };
+  const exists = habits?.some(
+    h =>
+      h.name.toLowerCase() === name.trim().toLowerCase() &&
+      h._id !== habit?._id
+  );
+
+  if (exists) {
+    toast.error("Já existe um hábito com esse nome ❌", {
+      theme: "dark",
+      autoClose: 2000,
+    });
+    return;
+  }
+  const handleSubmit = () => {
+    // ❌ Nome vazio
+    if (!name.trim()) {
+      toast.error("Digite um nome para o hábito ⚠️", {
+        theme: "dark",
+        autoClose: 2000,
+      });
+      return;
+    }
+
+    // ❌ Nome muito curto
+    if (name.trim().length < 3) {
+      toast.warning("O nome precisa ter pelo menos 3 letras ✍️", {
+        theme: "dark",
+        autoClose: 2000,
+      });
+      return;
+    }
+
+    const data = {
+      name: name.trim(),
+      icon,
+      color,
+    };
 
     if (isEdit) {
       onUpdate(habit._id, data);
+
+      toast.success("Hábito atualizado com sucesso ✨", {
+        theme: "dark",
+        autoClose: 2000,
+      });
     } else {
       onCreate(data);
+
+      toast.success("Hábito criado com sucesso 🚀", {
+        theme: "dark",
+        autoClose: 2000,
+      });
     }
 
     onClose();

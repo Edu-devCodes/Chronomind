@@ -27,8 +27,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.0.0",
     "multer": "^2.0.2",
-    "nodemailer": "^7.0.11",
     "pdfjs-dist": "^4.10.38",
+    "resend": "^6.9.1",
     "youtube-transcript": "^1.2.1",
     "yt-dlp-exec": "^1.0.2"
   },
