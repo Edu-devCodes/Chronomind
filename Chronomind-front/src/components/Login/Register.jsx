@@ -9,7 +9,9 @@ import {
   FaBrain,
   FaBullseye,
   FaChartLine,
-  FaFire
+  FaFire,
+  FaEye,
+  FaEyeSlash 
 } from "react-icons/fa";
 
 import { toast } from "react-toastify";
@@ -32,7 +34,8 @@ export default function Register() {
   const [timer, setTimer] = useState(0);
   const [redirecting, setRedirecting] = useState(false);
   const [sendingCode, setSendingCode] = useState(false);
-
+  const [showPass, setShowPass] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   async function enviarCode() {
 
@@ -209,11 +212,15 @@ export default function Register() {
               <div className="login-input">
 
                 <input
-                  type="password"
+                  type={showPass ? "text" : "password"}
                   placeholder="Sua senha"
                   value={senha}
                   onChange={e => setSenha(e.target.value)}
                 />
+
+                <span className="show-pass-icon" onClick={() => setShowPass(!showPass)}>
+                  {showPass ? <FaEyeSlash /> : <FaEye />}
+                </span>
 
               </div>
 
@@ -222,13 +229,16 @@ export default function Register() {
               <label>Confirmar senha</label>
 
               <div className="login-input">
-
                 <input
-                  type="password"
+                  type={showConfirm ? "text" : "password"}
                   placeholder="Confirmar senha"
                   value={confirmar}
                   onChange={e => setConfirmar(e.target.value)}
                 />
+
+                <span className="show-pass-icon" onClick={() => setShowConfirm(!showConfirm)}>
+                  {showConfirm ? <FaEyeSlash /> : <FaEye />}
+                </span>
 
               </div>
 
