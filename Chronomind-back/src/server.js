@@ -44,12 +44,12 @@ app.use("/summary", (req, res) => {
 
 
 connectDB();  
-console.log("EMAIL:", process.env.APP_EMAIL);
-console.log("PASS:", process.env.PASS_APP ? "OK" : "VAZIA");
-
+console.log("EMAIL:", process.env.BREVO_FROM);
+console.log("PASS:", process.env.BREVO_PASS ? "OK" : "VAZIA");
+console.log("USER:", process.env.BREVO_USER ? "OK" : "VAZIA");
 
 app.listen(PORT, () =>
-  console.log(`API rodando na porta http://localhost:${PORT}`)
+  console.log(`API rodando no render na porta :${PORT}`)
 );
 
 export default app;

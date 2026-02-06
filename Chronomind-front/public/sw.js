@@ -34,16 +34,17 @@ self.addEventListener("activate", event => {
 });
 
 
-self.addEventListener("fetch", event => {
-  const request = event.request;
+self.addEventListener("fetch", (event) => {
 
-  if (request.url.includes("/api")) {
-    event.respondWith(networkFirst(request));
+  // ❗ Ignora tudo que não for GET
+  if (event.request.method !== "GET") {
     return;
   }
 
+  event.respondWith(
+    cacheFirst(event.request)
+  );
 
-  event.respondWith(cacheFirst(request));
 });
 
 
