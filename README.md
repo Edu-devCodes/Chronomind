@@ -337,11 +337,11 @@ Cecília
 
 Backend:
 
-Eduardo (Autor)
+Eduardo 
 GitHub: https://github.com/Edu-devCodes
 
-Jackson
-GitHub: (adicionar)
+Jackson (Autor)
+GitHub: https://github.com/jacksongabrieldev-ops
 
 📌 Status
 
