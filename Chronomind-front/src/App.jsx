@@ -19,9 +19,9 @@ export default function App() {
   const { user, loadingUser } = useAuth();
   const location = useLocation();
 
-if (loadingUser) {
-  return <Loading text="Inicializando sistema..." />
-}
+  if (loadingUser) {
+    return <Loading text="Inicializando sistema..." />
+  }
 
   return (
     <AnimatePresence mode="wait">
@@ -149,6 +149,15 @@ if (loadingUser) {
           }
         />
 
+        <Route
+          path="/"
+          element={
+            <Navigate
+              to={user ? "/dashboard" : "/login"}
+              replace
+            />
+          }
+        />
         <Route
           path="*"
           element={
