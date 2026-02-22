@@ -85,15 +85,7 @@ export default function Studies() {
         {/* HEADER */}
         <header className="dashboard-header studies-header">
 
-          {/* MOBILE BTN */}
-          <button
-            className="mobile-menu-btn"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <FiX /> : <FiMenu />}
-          </button>
-
-          <div>
+          <div className="studies-title-name">
             <h1>
               Centro de <span>Estudos</span>
             </h1>

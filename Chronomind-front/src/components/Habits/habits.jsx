@@ -9,15 +9,32 @@ import { IoFlashOutline } from "react-icons/io5";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./habits.css";
+import Loading from "../../Loading/Loading";
+
 
 export default function Habits() {
   const [habits, setHabits] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [editingHabit, setEditingHabit] = useState(null);
+  const [loading, setLoading] = useState(true);
+useEffect(() => {
+  async function loadHabits() {
+    try {
+      const res = await HabitService.list();
+      setHabits(res.data);
+    } catch (err) {
+      console.error("Erro ao carregar hábitos:", err);
+      toast.error("Erro ao carregar hábitos ❌", {
+        theme: "dark",
+        autoClose: 2000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  useEffect(() => {
-    HabitService.list().then(res => setHabits(res.data));
-  }, []);
+  loadHabits();
+}, []);
 
   // CREATE
   const createHabit = async (data) => {
@@ -136,6 +153,10 @@ const toggleDone = async (id) => {
     new Set(habits.flatMap(h => h.completedDates || []))
   ).length;
 
+
+  if (loading) {
+  return <Loading text="Carregando hábitos..." />;
+}
   return (
     <div className="dashboard-layout">
       <Sidebar />

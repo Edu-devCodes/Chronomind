@@ -7,6 +7,10 @@
 }
 
 /* HEADER */
+
+.studies-header{
+  padding-left: 0;
+}
 .studies-header span {
   color: #ff2d2d;
 }
@@ -82,14 +86,6 @@
   color: white;
 }
 
-.generate-btn {
-  padding: 12px 20px;
-  background: #ff2d2d;
-  border: none;
-  border-radius: 14px;
-  color: white;
-  cursor: pointer;
-}
 
 /* ===== RESUMOS SALVOS ===== */
 .saved-summaries {
@@ -179,47 +175,6 @@
   color: #ff6b6b;
 }
 
-/* css da parte do video de reusmos com ia */
-.video-box {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 18px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.video-box input {
-  width: 100%;
-  padding: 14px 16px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(0, 0, 0, 0.4);
-  color: #fff;
-  font-size: 15px;
-  outline: none;
-  transition: border 0.2s ease;
-}
-
-.video-box input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.video-box input:focus {
-   border-color: #ff2d2d;
-}
-
-.generate-btn {
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(135deg, #8a080e, #ff0303);
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.2s ease, transform 0.1s ease;
-}
 
 .generate-btn:disabled {
   opacity: 0.6;
@@ -389,39 +344,7 @@
   margin-top: 18px;
 }
 
-/* ===============================
-   MOBILE
-================================ */
 
-/* ===============================
-   INPUT INLINE YOUTUBE
-================================ */
-
-.video-box-inline {
-  width: 100%;
-  margin-top: 10px;
-}
-
-.video-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  padding: 10px 12px;
-
-  border-radius: 14px;
-
-  background: rgba(255, 255, 255, 0.04);
-
-  border: 1px solid rgba(255, 255, 255, 0.12);
-
-  transition: all 0.2s ease;
-}
-
-.video-input-wrapper:focus-within {
-  border-color: #ff2d2d;
-  box-shadow: 0 0 0 1px rgba(255, 45, 45, 0.4);
-}
 
 /* Ícone do YouTube */
 .yt-icon {
@@ -430,26 +353,6 @@
   flex-shrink: 0;
 }
 
-/* Input */
-.yt-placeholder placeholder {
-  flex: 1 1 0%;      
-  min-width: 0;      
-
-  display: flex;
-  align-items: center;
-
-  padding: 12px 14px;
-
-  border-radius: 10px;
-
-  border: 1px solid rgba(255, 255, 255, 0.15);
-
-  background: rgba(0, 0, 0, 0.4);
-
-  cursor: pointer;
-
-  overflow: hidden;  
-}
 
 
 
@@ -550,12 +453,6 @@
   background: rgba(255, 107, 107, 0.08);
 }
 
-/* Botão gerar com ícone */
-.generate-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
 
 
 
@@ -580,6 +477,12 @@
     grid-template-columns: 1fr; 
     gap: 20px;
     padding: 0 14px; 
+  }
+  .studies-header {
+    padding: 10px;
+}
+  .dashboard-header p {
+    padding: 8px;
   }
 }
 
@@ -628,4 +531,32 @@
 
 .pdf-input input::placeholder {
   color: rgba(255,255,255,0.5);
+}
+
+
+/* ===============================
+   MOBILE AJUSTE INPUTS PDF + YT
+================================ */
+@media (max-width: 600px) {
+
+  .pdf-box {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .pdf-input {
+    width: 100%;
+  }
+
+  .pdf-remove-btn {
+    width: 100%;
+    height: 40px;
+  }
+
+  .generate-btn {
+    width: 100%;
+    height: 44px;
+  }
+
 }

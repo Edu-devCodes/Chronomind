@@ -331,16 +331,16 @@ UptimeRobot (rota de ping para evitar sleep)
 
 Frontend:
 
-Brayan
+Brayan (Colaborador)
 
-Cecília
+Cecília (Colaborador)
 
 Backend:
 
-Eduardo 
+Eduardo (Colaborador)
 GitHub: https://github.com/Edu-devCodes
 
-Jackson (Autor)
+Jackson (Colaborador)
 GitHub: https://github.com/jacksongabrieldev-ops
 
 📌 Status

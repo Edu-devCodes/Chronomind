@@ -204,6 +204,7 @@
 
   /* Header */
   .dashboard-header h1 {
+    padding-left: 50px;
     font-size: 28px;
   }
 
